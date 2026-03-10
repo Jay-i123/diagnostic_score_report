@@ -253,14 +253,6 @@ body.parent-view .accordion-body p{color:var(--p-text)}
 body.parent-view .accordion-body ul{color:var(--p-muted)}
 .accordion-body li{margin-bottom:6px}
 
-/* ===== GENERAL ABILITY ===== */
-.ga-card{margin-bottom:48px;display:flex;align-items:center;gap:32px;flex-wrap:wrap}
-.ga-score{text-align:center}
-.ga-score .ga-num{font-family:var(--font-display);font-size:64px;font-weight:700;color:var(--teal)}
-.ga-score .ga-label{font-size:12px;color:var(--mid-gray)}
-.ga-details{flex:1;min-width:280px}
-.ga-details p{font-size:14px;color:rgba(255,255,255,0.7);margin-bottom:8px}
-body.parent-view .ga-details p{color:var(--p-muted)}
 
 /* ===== SECTION 2: LONGITUDINAL ===== */
 .section-divider{
@@ -610,6 +602,51 @@ body.parent-view .chat-panel-body .lang-select{background:var(--p-card);color:va
   </div>
 </div>
 
+<!-- Placement Subskill Mastery Profile -->
+<h3 class="section-title fade-in teacher-only" style="font-size:22px;margin-top:32px">
+  EAL/D Subskill Mastery Profile — Placement Snapshot
+</h3>
+<p class="section-subtitle fade-in teacher-only">
+  Initial posterior probabilities of subskill mastery from the placement assessment (August 2025).
+  Threshold for mastery classification: P ≥ 0.60
+</p>
+
+<div class="parent-only fade-in">
+  <h3 class="section-title" style="font-size:22px;margin-top:32px">What Linh Could Do at Placement</h3>
+  <p class="section-subtitle">A detailed look at Linh's specific skills when she first started.</p>
+</div>
+
+<div class="attr-skill-grid fade-in">
+  <!-- Reading -->
+  <div class="card attr-card">
+    <h4 class="attr-title">Reading / Viewing</h4>
+    <div class="attr-code teacher-only" id="plReadingPattern"></div>
+    <div id="plReadingAttrs"></div>
+    <div class="mastery-pattern teacher-only" id="plReadingVector"></div>
+  </div>
+  <!-- Listening -->
+  <div class="card attr-card">
+    <h4 class="attr-title">Listening</h4>
+    <div class="attr-code teacher-only" id="plListeningPattern"></div>
+    <div id="plListeningAttrs"></div>
+    <div class="mastery-pattern teacher-only" id="plListeningVector"></div>
+  </div>
+  <!-- Speaking -->
+  <div class="card attr-card">
+    <h4 class="attr-title">Speaking</h4>
+    <div class="attr-code teacher-only" id="plSpeakingPattern"></div>
+    <div id="plSpeakingAttrs"></div>
+    <div class="mastery-pattern teacher-only" id="plSpeakingVector"></div>
+  </div>
+  <!-- Writing -->
+  <div class="card attr-card">
+    <h4 class="attr-title">Writing</h4>
+    <div class="attr-code teacher-only" id="plWritingPattern"></div>
+    <div id="plWritingAttrs"></div>
+    <div class="mastery-pattern teacher-only" id="plWritingVector"></div>
+  </div>
+</div>
+
 <!-- CEFR/IELTS/ACARA Equivalency Reference -->
 <div class="card fade-in teacher-only" style="padding:24px;margin-bottom:24px">
   <h4 style="font-size:14px;margin-bottom:12px;color:var(--mid-gray);text-transform:uppercase;letter-spacing:1px">Score Equivalency Reference</h4>
@@ -676,33 +713,6 @@ body.parent-view .chat-panel-body .lang-select{background:var(--p-card);color:va
   <p style="font-size:11px;color:var(--mid-gray);margin-top:8px">Mapped to Australian Curriculum v9.0 English strands and the Literacy General Capability sub-elements. EAL/D phases reflect Linh's placement assessment.</p>
 </div>
 
-<!-- Radar Chart -->
-<div class="card radar-section fade-in teacher-only">
-  <h4 style="text-align:center;margin-bottom:16px;font-size:16px;color:var(--mid-gray)">Skill Profile</h4>
-  <div class="radar-container"><canvas id="radarChart" aria-label="Radar chart showing skill profile"></canvas></div>
-</div>
-
-<!-- ============ 1.7 GENERAL ABILITY ============ -->
-<div class="card ga-card fade-in" style="margin-top:32px">
-  <div class="ga-score">
-    <div class="ga-num">7</div>
-    <div class="ga-label">Stanine</div>
-  </div>
-  <div class="ga-details">
-    <h3 style="font-size:20px;margin-bottom:8px">General Ability <span style="font-size:14px;color:var(--mid-gray)">(Non-Verbal Reasoning)</span></h3>
-    <div style="margin-bottom:12px">
-      <div class="stanine-bar" role="img" aria-label="Stanine 7, above average">
-        <div class="s-block below">1</div><div class="s-block below">2</div><div class="s-block below">3</div>
-        <div class="s-block average">4</div><div class="s-block average">5</div><div class="s-block average">6</div>
-        <div class="s-block above active" style="box-shadow:0 0 12px rgba(45,204,112,0.4)">7</div><div class="s-block above">8</div><div class="s-block above">9</div>
-      </div>
-      <div class="stanine-labels"><span>Below Average</span><span>Average</span><span>Above Average</span></div>
-    </div>
-    <p class="teacher-only">General ability and mathematical reasoning results should be interpreted together with school reports. The population for this measure is all students regardless of language background. This non-verbal measure is particularly important for EAL/D students, as it provides an indication of academic potential independent of English language proficiency.</p>
-    <p class="parent-only" style="color:var(--p-text)">This measures Linh's thinking and problem-solving ability, independent of English language. <strong style="color:var(--p-teal)">Linh scored above average</strong>, which means she has strong learning potential. With the right EAL/D support, she should progress well.</p>
-  </div>
-</div>
-
 <!-- Methodology Notes -->
 <div class="card fade-in teacher-only" style="margin-top:32px;padding:28px">
   <h4 style="font-size:14px;margin-bottom:16px;color:var(--mid-gray);text-transform:uppercase;letter-spacing:1px">Assessment Methodology</h4>
@@ -716,12 +726,8 @@ body.parent-view .chat-panel-body .lang-select{background:var(--p-card);color:va
       <p style="font-size:13px;color:rgba(255,255,255,0.75);line-height:1.7">Language acquisition is not a linear process. Students may show regression in some areas while progressing in others, and growth may plateau before accelerating. The model accounts for this by computing independent posterior probabilities at each assessment point rather than assuming monotonic growth.</p>
     </div>
     <div>
-      <h5 style="font-size:14px;color:var(--teal);margin-bottom:6px;font-family:var(--font-display)">General Ability Measure</h5>
-      <p style="font-size:13px;color:rgba(255,255,255,0.75);line-height:1.7">The General Ability (Non-Verbal Reasoning) stanine is derived from a separate aptitude assessment — not an English language test. It measures cognitive reasoning independent of language proficiency and is normed against all students regardless of language background.</p>
-    </div>
-    <div>
       <h5 style="font-size:14px;color:var(--teal);margin-bottom:6px;font-family:var(--font-display)">Norming Population</h5>
-      <p style="font-size:13px;color:rgba(255,255,255,0.75);line-height:1.7">Stanine scores for the EAL/D diagnostic are normed against EAL/D students in Australian schools (Band B, Years 7–9). The General Ability stanine is normed against the general student population regardless of language background.</p>
+      <p style="font-size:13px;color:rgba(255,255,255,0.75);line-height:1.7">Stanine scores for the EAL/D diagnostic are normed against EAL/D students in Australian schools (Band B, Years 7–9).</p>
     </div>
   </div>
 </div>
@@ -1480,8 +1486,46 @@ function renderAttributeBars() {
 }
 renderAttributeBars();
 
+// ===== PLACEMENT MASTERY BARS =====
+function renderPlacementMasteryBars() {
+  const mi = 0; // Placement test = August (index 0)
+  const isParent = document.body.classList.contains('parent-view');
+
+  ['reading','listening','speaking','writing'].forEach(skill => {
+    const container = document.getElementById('pl' + skill.charAt(0).toUpperCase() + skill.slice(1) + 'Attrs');
+    if (!container) return;
+    container.innerHTML = '';
+    DATA[skill].attrs.forEach(attr => {
+      const p = attr.p[mi];
+      const mastered = p >= MASTERY_THRESHOLD;
+      const colorClass = p >= 0.60 ? 'teal' : p >= 0.40 ? 'amber' : 'red';
+      const label = isParent ? attr.parent : attr.name;
+      container.innerHTML += `
+        <div class="attr-bar-row">
+          <div class="attr-bar-label">
+            <span class="mastery-dot ${mastered?'mastered':'not-mastered'}"></span>
+            ${label}
+          </div>
+          <div class="attr-bar-track">
+            <div class="attr-bar-fill ${colorClass}" style="width:${p*100}%">${(p*100).toFixed(0)}%</div>
+          </div>
+        </div>`;
+    });
+
+    const patternEl = document.getElementById('pl' + skill.charAt(0).toUpperCase() + skill.slice(1) + 'Pattern');
+    const vectorEl = document.getElementById('pl' + skill.charAt(0).toUpperCase() + skill.slice(1) + 'Vector');
+    if (patternEl || vectorEl) {
+      const vec = DATA[skill].attrs.map(a => a.p[mi] >= MASTERY_THRESHOLD ? 1 : 0);
+      const vecStr = '[' + vec.join(', ') + ']';
+      if (patternEl) patternEl.textContent = 'Pattern: ' + vecStr;
+      if (vectorEl) vectorEl.textContent = 'Mastery vector: ' + vecStr;
+    }
+  });
+}
+renderPlacementMasteryBars();
+
 // Re-render on view toggle
-const viewObserver = new MutationObserver(() => renderAttributeBars());
+const viewObserver = new MutationObserver(() => { renderAttributeBars(); renderPlacementMasteryBars(); });
 viewObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
 // ===== LONGITUDINAL CHARTS =====
