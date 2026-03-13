@@ -411,6 +411,50 @@ body.parent-view .chat-panel-body .lang-select{background:var(--p-card);color:va
 .methodology-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 @media(max-width:768px){.methodology-grid{grid-template-columns:1fr}}
 
+/* ===== WRITING SAMPLE ===== */
+.writing-sample-prompt{
+  font-size:13px;color:var(--mid-gray);padding:16px 20px;
+  background:rgba(255,255,255,0.03);border-left:3px solid var(--teal);
+  border-radius:0 var(--radius-sm) var(--radius-sm) 0;margin-bottom:20px;font-style:italic;
+}
+body.parent-view .writing-sample-prompt{background:rgba(90,50,179,0.04);border-color:var(--p-teal);color:var(--p-muted)}
+.writing-sample-text{
+  font-size:14px;line-height:2;padding:24px;
+  background:rgba(255,255,255,0.03);border-radius:var(--radius-sm);
+  border:1px solid var(--glass-border);color:rgba(255,255,255,0.85);
+  text-indent:2em;
+}
+.writing-sample-text p{margin-bottom:12px;text-indent:2em}
+.writing-sample-text p:last-child{margin-bottom:0}
+body.parent-view .writing-sample-text{background:#FAFAFA;border-color:var(--p-border);color:var(--p-text)}
+.annotation-grammar{background:rgba(223,32,46,0.15);border-bottom:2px solid var(--coral);padding:0 2px}
+.annotation-cohesion{background:rgba(237,158,47,0.15);border-bottom:2px solid var(--amber);padding:0 2px}
+.annotation-vocab{background:rgba(45,204,112,0.15);border-bottom:2px solid var(--success);padding:0 2px}
+.annotation-l1{background:rgba(107,97,250,0.15);border-bottom:2px solid var(--teal);padding:0 2px}
+.annotation-legend{
+  display:flex;gap:16px;flex-wrap:wrap;margin-top:16px;padding-top:16px;
+  border-top:1px solid var(--glass-border);font-size:12px;color:var(--mid-gray);
+}
+.annotation-legend .leg-item{display:flex;align-items:center;gap:6px}
+.annotation-legend .leg-swatch{width:16px;height:4px;border-radius:2px}
+.writing-assessment-notes{
+  margin-top:20px;padding:20px;background:rgba(255,255,255,0.03);
+  border-radius:var(--radius-sm);border:1px solid var(--glass-border);
+}
+.writing-assessment-notes h5{font-size:13px;color:var(--teal);margin-bottom:8px}
+.writing-assessment-notes ul{font-size:13px;color:rgba(255,255,255,0.75);margin-left:16px;line-height:1.7}
+
+/* ===== SPEAKING SAMPLES ===== */
+.speaking-samples-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:900px){.speaking-samples-grid{grid-template-columns:1fr}}
+.audio-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;font-size:12px;color:var(--mid-gray)}
+.audio-meta .meta-tag{padding:3px 10px;border-radius:12px;background:rgba(255,255,255,0.06);font-weight:500}
+body.parent-view .audio-meta .meta-tag{background:var(--p-border)}
+.audio-description{font-size:13px;color:rgba(255,255,255,0.75);line-height:1.7;margin-bottom:16px}
+body.parent-view .audio-description{color:var(--p-muted)}
+.audio-player-wrap audio{width:100%;filter:invert(1) hue-rotate(180deg);border-radius:8px}
+body.parent-view .audio-player-wrap audio{filter:none}
+
 /* ===== PRINT ===== */
 @media print{
   body{background:#fff!important;color:#000!important;font-size:11px}
@@ -426,6 +470,8 @@ body.parent-view .chat-panel-body .lang-select{background:var(--p-card);color:va
   .heatmap-table td,.heatmap-table th{padding:4px 6px;font-size:9px}
   .accordion-body{max-height:none!important;padding:12px 16px!important}
   .fade-in{opacity:1!important;transform:none!important}
+  .audio-player-wrap{display:none}
+  .speaking-samples-grid{grid-template-columns:1fr 1fr}
 }
 </style>
 </head>
@@ -644,6 +690,133 @@ body.parent-view .chat-panel-body .lang-select{background:var(--p-card);color:va
     <div class="attr-code teacher-only" id="plWritingPattern"></div>
     <div id="plWritingAttrs"></div>
     <div class="mastery-pattern teacher-only" id="plWritingVector"></div>
+  </div>
+</div>
+
+<!-- Writing Sample -->
+<h3 class="section-title fade-in" style="font-size:22px;margin-top:32px">
+  <span class="teacher-only">Writing Sample — Placement Assessment</span>
+  <span class="parent-only">Linh's Writing Sample</span>
+</h3>
+<p class="section-subtitle fade-in">
+  <span class="teacher-only">Timed persuasive essay (30 minutes) — Placement assessment, 15 August 2025.</span>
+  <span class="parent-only">This is an essay Linh wrote during her placement test in August 2025.</span>
+</p>
+
+<div class="card fade-in" style="padding:28px">
+  <div class="writing-sample-prompt">
+    <strong>Task:</strong> "Should students be allowed to use mobile phones at school? Write a persuasive essay giving your opinion. You have 30 minutes."
+  </div>
+
+  <!-- Teacher view: annotated essay -->
+  <div class="teacher-only">
+    <div class="writing-sample-text">
+      <p>I think <span class="annotation-l1">student</span> should be allowed to use <span class="annotation-l1">phone</span> at school. <span class="annotation-cohesion">Because</span> in modern time, technology is very important for <span class="annotation-l1">the study</span>. Many school in other country already allow this and I think Australia should do same thing.</p>
+      <p><span class="annotation-cohesion">First,</span> mobile phone <span class="annotation-grammar">help</span> student to search information quickly. When teacher give <span class="annotation-l1">a homework</span>, sometimes we don't understand <span class="annotation-grammar">and need to looking</span> on internet. <span class="annotation-vocab">In my previous school in Vietnam</span>, we can use phone for dictionary and it is very <span class="annotation-grammar">good for study</span>. The phone also have calculator and many <span class="annotation-grammar">useful app</span> that make learning more easy.</p>
+      <p><span class="annotation-cohesion">And</span> some people say phone is bad because student will play game. But I think <span class="annotation-cohesion">it's really not fair</span> to take everyone phone away because <span class="annotation-grammar">some student</span> don't follow the rule. Teacher can make rule about when <span class="annotation-grammar">to using</span> phone and when to put away. <span class="annotation-cohesion">If student break the rule, teacher can take phone for that day.</span></p>
+      <p><span class="annotation-cohesion">Also,</span> phone is important for safety. <span class="annotation-grammar">Parent</span> need to contact <span class="annotation-grammar">children</span> sometimes, especially after school <span class="annotation-grammar">or when have</span> emergency. <span class="annotation-l1">In the school</span> without phone, student cannot call parent if something <span class="annotation-grammar">happen</span>.</p>
+      <p>In conclusion, I believe <span class="annotation-grammar">student should allow to use</span> phone at school because it <span class="annotation-grammar">help for</span> learning, it can be controlled with good rule, and it is important for safety. School should <span class="annotation-grammar">trust</span> student more and let them use <span class="annotation-l1">the technology</span>.</p>
+    </div>
+    <div class="annotation-legend">
+      <div class="leg-item"><span class="leg-swatch" style="background:var(--coral)"></span> Grammar</div>
+      <div class="leg-item"><span class="leg-swatch" style="background:var(--amber)"></span> Cohesion / Structure</div>
+      <div class="leg-item"><span class="leg-swatch" style="background:var(--success)"></span> Vocabulary (strength)</div>
+      <div class="leg-item"><span class="leg-swatch" style="background:var(--teal)"></span> L1 Transfer (Vietnamese)</div>
+    </div>
+    <div class="writing-assessment-notes">
+      <h5>Assessment Notes</h5>
+      <ul>
+        <li><strong>Vocabulary (P=0.94):</strong> Adequate task-relevant vocabulary. Limited range — repetitive use of "important", "good", "bad". L1 lexical resource supports communication.</li>
+        <li><strong>Grammar (P=0.88):</strong> Core SVO structure functional. Systematic article omission and plural marking errors consistent with Vietnamese L1 (no article/plural system). Subject-verb agreement inconsistent. Gerund/infinitive confusion ("good for study", "need to looking").</li>
+        <li><strong>Cohesion (P=0.55):</strong> Uses basic connectors (First, Also, In conclusion) but relies on "And" and "Because" as sentence starters. Paragraph transitions present but underdeveloped. Ideas loosely sequenced.</li>
+        <li><strong>Creating Texts (P=0.42):</strong> Addresses the prompt with a clear position. Three supporting points identified but underdeveloped. Counter-argument attempted but simplistic.</li>
+        <li><strong>Audience & Purpose (P=0.22):</strong> Inconsistent register — mixes informal ("it's really not fair") with academic attempts. Shifts to personal anecdote mid-essay without signposting.</li>
+        <li><strong>Rhetoric (P=0.08):</strong> No rhetorical questions, emotive language, or persuasive devices. No acknowledgement of audience. Counter-argument dismissed without engagement.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Parent view: clean essay -->
+  <div class="parent-only">
+    <div class="writing-sample-text">
+      <p>I think student should be allowed to use phone at school. Because in modern time, technology is very important for the study. Many school in other country already allow this and I think Australia should do same thing.</p>
+      <p>First, mobile phone help student to search information quickly. When teacher give a homework, sometimes we don't understand and need to looking on internet. In my previous school in Vietnam, we can use phone for dictionary and it is very good for study. The phone also have calculator and many useful app that make learning more easy.</p>
+      <p>And some people say phone is bad because student will play game. But I think it's really not fair to take everyone phone away because some student don't follow the rule. Teacher can make rule about when to using phone and when to put away. If student break the rule, teacher can take phone for that day.</p>
+      <p>Also, phone is important for safety. Parent need to contact children sometimes, especially after school or when have emergency. In the school without phone, student cannot call parent if something happen.</p>
+      <p>In conclusion, I believe student should allow to use phone at school because it help for learning, it can be controlled with good rule, and it is important for safety. School should trust student more and let them use the technology.</p>
+    </div>
+    <p style="margin-top:16px;font-size:14px;color:var(--p-muted)">Linh can express her ideas and opinions clearly in writing. Her teachers are helping her improve how she organises her ideas and connects her sentences together.</p>
+  </div>
+</div>
+
+<!-- Speaking Samples -->
+<h3 class="section-title fade-in" style="font-size:22px;margin-top:32px">
+  <span class="teacher-only">Speaking Samples — Placement Assessment</span>
+  <span class="parent-only">Linh's Speaking Recordings</span>
+</h3>
+<p class="section-subtitle fade-in">
+  <span class="teacher-only">Audio recordings from the speaking component of the placement assessment, 15 August 2025. Scored against ACARA EAL/D Speaking sub-elements.</span>
+  <span class="parent-only">These are recordings from Linh's speaking test in August 2025.</span>
+</p>
+
+<div class="speaking-samples-grid fade-in">
+  <!-- Interview -->
+  <div class="card" style="padding:28px">
+    <h4 style="font-size:16px;margin-bottom:12px">
+      <span class="teacher-only">Placement Interview</span>
+      <span class="parent-only">Interview Recording</span>
+    </h4>
+    <div class="audio-meta">
+      <span class="meta-tag">15 Aug 2025</span>
+      <span class="meta-tag">4:32</span>
+      <span class="meta-tag teacher-only">Interlocutor: EAL/D Assessment Officer</span>
+    </div>
+    <p class="audio-description">
+      <span class="teacher-only">Semi-structured interview covering personal background, daily routines, school experience, and future plans. Scored against ACARA EAL/D Speaking sub-elements: Pronunciation, Stress &amp; Intonation, Spoken Fluency, Language Use in Context, and Interacting.</span>
+      <span class="parent-only">A short conversation where Linh talked about herself, her school, and her interests.</span>
+    </p>
+    <div class="audio-player-wrap">
+      <audio controls preload="none" src="interview.mp3" aria-label="Placement interview recording">Your browser does not support the audio element.</audio>
+    </div>
+    <div class="teacher-only" style="margin-top:16px;padding:16px;background:rgba(255,255,255,0.03);border-radius:var(--radius-sm);border:1px solid var(--glass-border)">
+      <h5 style="font-size:13px;color:var(--teal);margin-bottom:8px">Assessment Observations</h5>
+      <ul style="font-size:13px;color:rgba(255,255,255,0.75);margin-left:16px;line-height:1.7">
+        <li><strong>Pronunciation:</strong> Generally intelligible; occasional difficulty with /r/–/l/ distinction and final consonant clusters (e.g., "worl" for "world")</li>
+        <li><strong>Stress &amp; Intonation:</strong> Syllable-timed rhythm (L1 transfer from Vietnamese tone system); limited use of sentence stress for emphasis</li>
+        <li><strong>Spoken Fluency:</strong> Frequent pauses (2–3s); self-corrections; limited discourse markers ("um", "so" used repeatedly)</li>
+        <li><strong>Language Use in Context:</strong> Formulaic expressions used appropriately in simple social contexts; struggled with academic register when describing school subjects</li>
+        <li><strong>Interacting:</strong> Responded to questions but rarely initiated; minimal back-channelling; relied on short answers when uncertain</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Roleplay -->
+  <div class="card" style="padding:28px">
+    <h4 style="font-size:16px;margin-bottom:12px">
+      <span class="teacher-only">Roleplay Task — Requesting a Deadline Extension</span>
+      <span class="parent-only">Roleplay Recording</span>
+    </h4>
+    <div class="audio-meta">
+      <span class="meta-tag">15 Aug 2025</span>
+      <span class="meta-tag">2:15</span>
+      <span class="meta-tag teacher-only">Face-threatening speech act: Requesting</span>
+    </div>
+    <p class="audio-description">
+      <span class="teacher-only">Transactional roleplay: Student requests a deadline extension from a teacher. Assessed for pragmatic competence (speech act realisation), politeness strategies, and formulaic language use. Dynamic assessment administered with graduated mediation prompts.</span>
+      <span class="parent-only">Linh practised a conversation where she needed to ask a teacher for extra time on an assignment.</span>
+    </p>
+    <div class="audio-player-wrap">
+      <audio controls preload="none" src="roleplay.mp3" aria-label="Roleplay task recording">Your browser does not support the audio element.</audio>
+    </div>
+    <div class="teacher-only" style="margin-top:16px;padding:16px;background:rgba(255,255,255,0.03);border-radius:var(--radius-sm);border:1px solid var(--glass-border)">
+      <h5 style="font-size:13px;color:var(--teal);margin-bottom:8px">Dynamic Assessment Results</h5>
+      <ul style="font-size:13px;color:rgba(255,255,255,0.75);margin-left:16px;line-height:1.7">
+        <li><strong>Phase 1 (Independent):</strong> Unable to produce the request spontaneously — long pause followed by "Teacher, I need more time"</li>
+        <li><strong>Phase 2 (Implicit mediation):</strong> Given hint about politeness → produced "Can I please have more time?" — functional but direct</li>
+        <li><strong>Phase 3 (Explicit mediation):</strong> Modelled politeness frame → successfully produced "Excuse me, could I please have more time for my assignment? I'm finding it a bit difficult."</li>
+        <li><strong>ZPD Score:</strong> 2/3 (Explicit mediation required) — pragmatic competence is within the Zone of Proximal Development with scaffolding</li>
+      </ul>
+    </div>
   </div>
 </div>
 
