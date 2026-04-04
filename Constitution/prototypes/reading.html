@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnostiq Reading Assessment — Item Browser</title>
+<style>
+  :root {
+    --teal: #0D7377;
+    --teal-light: #E8F5F5;
+    --teal-dark: #095456;
+    --dark: #1A1A2E;
+    --grey: #555555;
+    --light-grey: #F5F5F5;
+    --border: #E0E0E0;
+    --correct: #2E7D32;
+    --correct-bg: #E8F5E9;
+    --wrong-bg: #FFEBEE;
+    --info-bg: #FFF8E1;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--light-grey);
+    color: var(--dark);
+    line-height: 1.6;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--teal);
+    color: white;
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+  .header .subtitle {
+    font-size: 13px;
+    opacity: 0.85;
+    margin-top: 2px;
+  }
+  .header .badge {
+    background: rgba(255,255,255,0.2);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: auto;
+    white-space: nowrap;
+  }
+
+  /* LAYOUT */
+  .container {
+    display: flex;
+    min-height: calc(100vh - 80px);
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 280px;
+    min-width: 280px;
+    background: white;
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    position: sticky;
+    top: 80px;
+    height: calc(100vh - 80px);
+  }
+  .sidebar-section {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-section:last-child { border-bottom: none; }
+  .stage-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--teal);
+    padding: 8px 20px 4px;
+  }
+  .stage-label .stage-time {
+    font-weight: 400;
+    color: var(--grey);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--dark);
+    transition: all 0.15s;
+    gap: 10px;
+    border-left: 3px solid transparent;
+  }
+  .nav-item:hover {
+    background: var(--teal-light);
+  }
+  .nav-item.active {
+    background: var(--teal-light);
+    border-left-color: var(--teal);
+    font-weight: 600;
+  }
+  .nav-item .task-code {
+    background: var(--teal);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    min-width: 28px;
+    text-align: center;
+  }
+  .nav-item .item-count {
+    margin-left: auto;
+    background: var(--light-grey);
+    color: var(--grey);
+    font-size: 11px;
+    padding: 1px 7px;
+    border-radius: 10px;
+  }
+
+  /* MAIN CONTENT */
+  .main {
+    flex: 1;
+    padding: 32px 40px;
+    max-width: 860px;
+  }
+
+  /* TASK TYPE HEADER */
+  .task-header {
+    margin-bottom: 24px;
+  }
+  .task-header .task-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--teal);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .task-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 4px;
+  }
+  .task-header .q-matrix {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 13px;
+    color: var(--teal);
+    margin-bottom: 8px;
+  }
+  .task-header .description {
+    font-size: 14px;
+    color: var(--grey);
+    line-height: 1.5;
+  }
+
+  /* ITEM CARD */
+  .item-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    margin-bottom: 24px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .item-card .item-label {
+    background: var(--light-grey);
+    padding: 10px 20px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--grey);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .item-card .item-label .difficulty {
+    margin-left: auto;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+  .item-card .item-label .difficulty.easy { background: #E8F5E9; color: #2E7D32; }
+  .item-card .item-label .difficulty.moderate { background: #FFF3E0; color: #E65100; }
+  .item-card .item-label .difficulty.hard { background: #FFEBEE; color: #C62828; }
+
+  /* PASSAGE */
+  .passage-box {
+    background: #FAFBFC;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 16px 20px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--dark);
+  }
+  .passage-box .passage-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--teal);
+    margin-bottom: 10px;
+  }
+  .passage-box .passage-meta {
+    margin-top: 12px;
+    font-size: 11px;
+    color: var(--grey);
+    font-style: italic;
+  }
+
+  /* QUESTION */
+  .question-text {
+    padding: 16px 20px 8px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--dark);
+  }
+
+  /* OPTIONS */
+  .options-list {
+    padding: 8px 20px 16px;
+    list-style: none;
+  }
+  .option-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    margin: 4px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 2px solid var(--border);
+    transition: all 0.15s;
+    font-size: 14px;
+  }
+  .option-item:hover:not(.revealed) {
+    border-color: var(--teal);
+    background: var(--teal-light);
+  }
+  .option-item .option-letter {
+    font-weight: 700;
+    color: var(--grey);
+    min-width: 20px;
+  }
+  .option-item.selected {
+    border-color: var(--teal);
+    background: var(--teal-light);
+  }
+  .option-item.revealed.correct {
+    border-color: var(--correct);
+    background: var(--correct-bg);
+  }
+  .option-item.revealed.correct .option-letter {
+    color: var(--correct);
+  }
+  .option-item.revealed.incorrect {
+    border-color: #C62828;
+    background: var(--wrong-bg);
+    opacity: 0.6;
+  }
+  .option-item.revealed.neutral {
+    opacity: 0.5;
+  }
+
+  /* REVEAL BUTTON */
+  .reveal-btn {
+    display: block;
+    margin: 0 20px 16px;
+    padding: 10px 20px;
+    background: var(--teal);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .reveal-btn:hover { background: var(--teal-dark); }
+  .reveal-btn:disabled {
+    background: #ccc;
+    cursor: default;
+  }
+
+  /* EXPLANATION */
+  .explanation {
+    margin: 0 20px 20px;
+    padding: 16px;
+    background: var(--info-bg);
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--dark);
+    display: none;
+  }
+  .explanation.visible { display: block; }
+  .explanation .exp-label {
+    font-weight: 700;
+    color: #F57F17;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+
+  /* ITEM NAVIGATOR */
+  .item-nav {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .item-nav-btn {
+    padding: 6px 14px;
+    border: 2px solid var(--border);
+    background: white;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .item-nav-btn:hover { border-color: var(--teal); color: var(--teal); }
+  .item-nav-btn.active { background: var(--teal); color: white; border-color: var(--teal); }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>Diagnostiq Reading Assessment</h1>
+    <div class="subtitle">Item Browser &mdash; Sample Items</div>
+  </div>
+  <div class="badge">Band M &bull; Years 9&ndash;10</div>
+</div>
+
+<div class="container">
+  <div class="sidebar" id="sidebar"></div>
+  <div class="main" id="main"></div>
+</div>
+
+<script>
+const ITEMS = [
+  // ===== STAGE 1 =====
+  {
+    stage: 1,
+    taskCode: "1A",
+    taskName: "Orthographic Choice",
+    attributes: "A1: Word Reading",
+    qMatrix: "[1,0,0,0,0,0]",
+    description: "Four written words appear on screen. Three are plausible pseudowords; one is a real English word. Student selects the real word. Tests orthographic pattern recognition.",
+    timing: "~8 sec/item",
+    items: [
+      {
+        label: "Sample 1",
+        difficulty: "easy",
+        passage: null,
+        question: "Which of these is a real English word?",
+        options: ["brane", "brain", "braine", "brayn"],
+        correct: 1,
+        explanation: "Tests whether the student can distinguish correct English orthography from plausible pseudowords. All four options are phonologically identical or near-identical. Distractor A drops the 'i' (common L2 simplification). C adds a silent 'e' by analogy. D uses phonetic spelling."
+      },
+      {
+        label: "Sample 2",
+        difficulty: "moderate",
+        passage: null,
+        question: "Which of these is a real English word?",
+        options: ["envirament", "enviroment", "environment", "envierment"],
+        correct: 2,
+        explanation: "Tests orthographic precision for a high-frequency academic word. All distractors represent common L2 misspellings. B is the most common error (missing the second 'n'). Harder because the target is polysyllabic with an unstressed syllable (-ron-) that many L2 speakers reduce."
+      }
+    ]
+  },
+  {
+    stage: 1,
+    taskCode: "1B",
+    taskName: "Phrase Completion",
+    attributes: "A1: Word Reading",
+    qMatrix: "[1,0,0,0,0,0]",
+    description: "A common English phrase or collocation appears with a gap. Student selects the word that completes the phrase. Tests sight recognition of high-frequency collocations.",
+    timing: "~10 sec/item",
+    items: [
+      {
+        label: "Sample 1",
+        difficulty: "easy",
+        passage: null,
+        question: 'Complete the phrase: "She made a __________ with her friend to meet after school."',
+        options: ["point", "plan", "place", "price"],
+        correct: 1,
+        explanation: "Tests the collocation 'make a plan.' All distractors collocate with 'make' in other contexts (make a point, make a place, make a price), so the student needs semantic/collocational knowledge."
+      },
+      {
+        label: "Sample 2",
+        difficulty: "moderate",
+        passage: null,
+        question: 'Complete the phrase: "The teacher asked us to hand __________ our assignments by Friday."',
+        options: ["out", "over", "in", "off"],
+        correct: 2,
+        explanation: "Tests the phrasal verb 'hand in' (submit). All four particles create valid phrasal verbs with 'hand' (hand out = distribute, hand over = surrender, hand in = submit, hand off = pass). Phrasal verbs are a notorious difficulty for EAL/D learners."
+      }
+    ]
+  },
+  {
+    stage: 1,
+    taskCode: "2A",
+    taskName: "Semantic Association",
+    attributes: "A2: Vocabulary",
+    qMatrix: "[0,1,0,0,0,0]",
+    description: "A target word is shown. Student selects the word closest in meaning. Tests depth of vocabulary knowledge.",
+    timing: "~10 sec/item",
+    items: [
+      {
+        label: "Sample 1",
+        difficulty: "easy",
+        passage: null,
+        question: "Which word is closest in meaning to 'frequent'?",
+        options: ["fast", "important", "often", "recent"],
+        correct: 2,
+        explanation: "Tests meaning of a Tier 2 academic word. Distractor A ('fast') is the most diagnostic: students may confuse 'frequent' with 'fast'. B ('important') is a default guess. D ('recent') tests phonological similarity confusion."
+      },
+      {
+        label: "Sample 2",
+        difficulty: "easy",
+        passage: null,
+        question: "Which word is closest in meaning to 'vanish'?",
+        options: ["appear", "decrease", "disappear", "damage"],
+        correct: 2,
+        explanation: "Tests synonym knowledge. Distractor A is the antonym \u2014 selecting it shows partial knowledge (relates to visibility but reversed polarity). B confuses 'becoming less' with 'going away completely.' D is a phonological distractor."
+      }
+    ]
+  },
+  {
+    stage: 1,
+    taskCode: "2B",
+    taskName: "Odd-One-Out",
+    attributes: "A2: Vocabulary",
+    qMatrix: "[0,1,0,0,0,0]",
+    description: "Four words appear on screen. Three belong to the same semantic category; one does not. Student selects the word that does not belong. Tests categorical vocabulary knowledge.",
+    timing: "~10 sec/item",
+    items: [
+      {
+        label: "Sample 1",
+        difficulty: "easy",
+        passage: null,
+        question: "Which word does NOT belong with the others?",
+        options: ["ruler", "compass", "protractor", "textbook"],
+        correct: 3,
+        explanation: "Tests categorical organisation. A, B, and C are mathematical instruments; D is a book. Set within a single domain (school equipment) so the student needs the finer distinction between measuring tools and reference materials."
+      },
+      {
+        label: "Sample 2",
+        difficulty: "moderate",
+        passage: null,
+        question: "Which word does NOT belong with the others?",
+        options: ["relieved", "anxious", "calm", "exhausted"],
+        correct: 3,
+        explanation: "Tests categorical vocabulary at a more abstract level. A, B, C relate to stress/worry (emotional states). D is a physical state (fatigue). Harder because all four describe internal states \u2014 the category boundary is less obvious."
+      }
+    ]
+  },
+  {
+    stage: 1,
+    taskCode: "2C",
+    taskName: "Morphological Decomposition",
+    attributes: "A1 + A2: Word Reading + Vocabulary",
+    qMatrix: "[1,1,0,0,0,0]",
+    description: "A derived or affixed word is shown. Student answers a question about the meaning of a prefix, suffix, or root. Tests morphological awareness.",
+    timing: "~12 sec/item",
+    items: [
+      {
+        label: "Sample 1",
+        difficulty: "easy",
+        passage: null,
+        question: "In the word 'disapproval,' what does the prefix 'dis-' mean?",
+        options: ["before", "not / opposite of", "again", "very much"],
+        correct: 1,
+        explanation: "Tests productive morphological knowledge. The student must identify the prefix boundary (dis-approval), access the prefix meaning, and understand how it modifies the base. A student who selects C ('again') may be confusing 'dis-' with 're-'."
+      },
+      {
+        label: "Sample 2",
+        difficulty: "moderate",
+        passage: null,
+        question: "The word 'uncomfortable' is made up of three parts: un + comfort + able. What does the suffix '-able' mean?",
+        options: ["without", "the act of", "a person who", "can be / capable of"],
+        correct: 3,
+        explanation: "Tests understanding of the adjectival suffix '-able/-ible.' The item scaffolds by showing morpheme boundaries. Distractor A ('without') tests confusion with the prefix 'un-' \u2014 the student may be attending to the wrong morpheme."
+      }
+    ]
+  },
+
+  // ===== STAGE 2 =====
+  {
+    stage: 2,
+    taskCode: "3A",
+    taskName: "Main Idea / Gist",
+    attributes: "A3: Global Comprehension",
+    qMatrix: "[1,1,1,0,0,0]",
+    description: "Student reads a passage, then selects the option that best captures the main idea, overall topic, or best title. Tests gist extraction rather than fixating on details.",
+    timing: "~60 sec/item",
+    items: [
+      {
+        label: "Sample 1",
+        difficulty: "moderate",
+        passage: {
+          text: "Jellyfish have been around for over 500 million years \u2014 long before dinosaurs appeared on Earth. Despite having no brain, no heart, and no blood, they are among the most successful animals in the ocean. Their bodies are made up of about 95% water, which makes them almost invisible to predators.\n\nIn recent years, jellyfish numbers have increased dramatically in many parts of the world. Scientists believe this may be linked to warmer ocean temperatures and overfishing, which removes the fish that compete with jellyfish for food. Some beaches in Australia have had to close during summer because of dangerous jellyfish swarms. While most jellyfish stings are harmless, a few species, including the box jellyfish found in northern Queensland, can be deadly.",
+          meta: "113 words \u2022 Information Report \u2022 Band M",
+          id: "jellyfish"
+        },
+        question: "What would be the best title for this passage?",
+        options: [
+          "How to Avoid Jellyfish Stings in Australia",
+          "Jellyfish: Ancient Survivors in a Changing Ocean",
+          "Why Scientists Are Worried About Overfishing",
+          "The Most Dangerous Animals in Queensland"
+        ],
+        correct: 1,
+        explanation: "Tests gist comprehension. A narrows to a practical detail. C picks up a supporting detail (overfishing) and treats it as the topic. D over-generalises. Only B captures both paragraphs: jellyfish are ancient (para 1) and their numbers are changing (para 2)."
+      },
+      {
+        label: "Sample 2",
+        difficulty: "moderate",
+        passage: {
+          text: "Last term, our school introduced a new rule: all students must leave their phones in their lockers during class. Some teachers say it has made a huge difference \u2014 students are more focused and there are fewer arguments about screen time. But many students disagree. They say they need their phones to look things up for class work and to contact their parents in emergencies.\n\nThe student council has proposed a compromise: phones can be used during class only with teacher permission, and must be face-down on the desk at all other times. The principal is considering the proposal and will announce a decision next week.",
+          meta: "108 words \u2022 Discussion \u2022 Band M",
+          id: "phones"
+        },
+        question: "What is this passage mainly about?",
+        options: [
+          "Why students should not have phones at school",
+          "A school\u2019s debate about phone rules and a possible solution",
+          "How the student council makes decisions",
+          "The principal\u2019s new phone policy"
+        ],
+        correct: 1,
+        explanation: "Tests gist comprehension of a discussion text. A captures only one side (teachers). C picks up the student council detail but misidentifies it as the main topic. D states something that hasn't happened yet."
+      }
+    ]
+  },
+  {
+    stage: 2,
+    taskCode: "3B",
+    taskName: "Detail Retrieval",
+    attributes: "A4: Literal Comprehension",
+    qMatrix: "[1,1,0,1,0,0]",
+    description: "Student reads a passage, then answers a question about explicitly stated information. The answer is directly in the text.",
+    timing: "~45 sec/item",
+    items: [
+      {
+        label: "Sample 1",
+        difficulty: "easy",
+        passage: {
+          text: "Jellyfish have been around for over 500 million years \u2014 long before dinosaurs appeared on Earth. Despite having no brain, no heart, and no blood, they are among the most successful animals in the ocean. Their bodies are made up of about 95% water, which makes them almost invisible to predators.\n\nIn recent years, jellyfish numbers have increased dramatically in many parts of the world. Scientists believe this may be linked to warmer ocean temperatures and overfishing, which removes the fish that compete with jellyfish for food. Some beaches in Australia have had to close during summer because of dangerous jellyfish swarms. While most jellyfish stings are harmless, a few species, including the box jellyfish found in northern Queensland, can be deadly.",
+          meta: "113 words \u2022 Information Report \u2022 Band M",
+          id: "jellyfish"
+        },
+        question: "According to the passage, what are jellyfish bodies mostly made of?",
+        options: [
+          "A special type of skin",
+          "Water",
+          "Blood and muscle",
+          "Invisible cells"
+        ],
+        correct: 1,
+        explanation: "Tests literal detail retrieval. The answer is stated explicitly: 'bodies are made up of about 95% water.' C directly contradicts the passage ('no blood'). A student who selects C despite the contradiction may be reading individual words without processing negation."
+      },
+      {
+        label: "Sample 2",
+        difficulty: "easy",
+        passage: {
+          text: "The Great Barrier Reef stretches over 2,300 kilometres along the northeast coast of Australia. It is the largest coral reef system in the world and can even be seen from space. The reef is home to more than 1,500 species of fish, 400 types of coral, and many other marine animals including sea turtles and dolphins.\n\nEvery year, around two million tourists visit the reef, making it one of Australia\u2019s most popular destinations. Visitors can go snorkelling, diving, or take glass-bottom boat tours. However, tourism also brings challenges: sunscreen chemicals, boat anchors, and careless divers can all damage the fragile coral.",
+          meta: "110 words \u2022 Information Report \u2022 Band M",
+          id: "reef"
+        },
+        question: "How many species of fish live on the Great Barrier Reef?",
+        options: [
+          "About 400",
+          "More than 1,500",
+          "About 2,300",
+          "Around two million"
+        ],
+        correct: 1,
+        explanation: "Tests precision in extracting numerical details. All four options are numbers from the passage but refer to different things: 400 = coral types, 1,500 = fish species, 2,300 = kilometres, two million = tourists. Tests whether the student can bind a number to the correct referent."
+      }
+    ]
+  },
+  {
+    stage: 2,
+    taskCode: "4A",
+    taskName: "Paraphrase Matching",
+    attributes: "A4: Literal Comprehension",
+    qMatrix: "[1,1,0,1,0,0]",
+    description: "A sentence from the passage is highlighted. Student selects the option that says the same thing in different words. Tests meaning comprehension beyond surface recognition.",
+    timing: "~50 sec/item",
+    items: [
+      {
+        label: "Sample 1",
+        difficulty: "moderate",
+        passage: {
+          text: "Jellyfish have been around for over 500 million years \u2014 long before dinosaurs appeared on Earth. Despite having no brain, no heart, and no blood, they are among the most successful animals in the ocean. Their bodies are made up of about 95% water, which makes them almost invisible to predators.\n\nIn recent years, jellyfish numbers have increased dramatically in many parts of the world. Scientists believe this may be linked to warmer ocean temperatures and overfishing, which removes the fish that compete with jellyfish for food. Some beaches in Australia have had to close during summer because of dangerous jellyfish swarms. While most jellyfish stings are harmless, a few species, including the box jellyfish found in northern Queensland, can be deadly.",
+          meta: "113 words \u2022 Information Report \u2022 Band M",
+          id: "jellyfish"
+        },
+        question: 'The passage says: "Scientists believe this may be linked to warmer ocean temperatures and overfishing." Which of the following says the same thing in different words?',
+        options: [
+          "Scientists are certain that warm water and too much fishing are causing the problem.",
+          "Researchers think the increase might be connected to hotter seas and catching too many fish.",
+          "Scientists have discovered that jellyfish prefer warm water and eat the same food as fish.",
+          "Researchers are studying whether jellyfish can survive in cold water."
+        ],
+        correct: 1,
+        explanation: "Tests paraphrase recognition. Distractor A changes hedging ('believe'/'may be') to certainty ('are certain') \u2014 a critical comprehension error. C introduces new information. D is a different topic. Only B preserves both the epistemic hedge and the two causes."
+      },
+      {
+        label: "Sample 2",
+        difficulty: "moderate",
+        passage: {
+          text: "Wombats are sturdy, burrowing marsupials found only in Australia. They dig extensive underground tunnels called warrens, which can be up to 200 metres long. Wombats have a unique backwards-facing pouch, which prevents dirt from getting in while they dig. Their droppings are cube-shaped \u2014 the only known animal to produce this shape \u2014 which stops the droppings from rolling away and helps wombats mark their territory.",
+          meta: "68 words \u2022 Information Report \u2022 Band M",
+          id: "wombats"
+        },
+        question: 'The passage says: "Wombats have a unique backwards-facing pouch, which prevents dirt from getting in while they dig." Which of the following says the same thing in different words?',
+        options: [
+          "Wombats carry their babies in a pouch that faces the wrong way.",
+          "A wombat\u2019s pouch opens toward its back legs so soil stays out during digging.",
+          "Wombats dig so quickly that no dirt can enter their pouch.",
+          "The backwards pouch allows wombats to dig faster than other marsupials."
+        ],
+        correct: 1,
+        explanation: "Tests paraphrase matching with cause-effect structure. A misses the functional explanation and adds 'wrong way' (implies error). C changes the causal mechanism. D introduces a comparison not in the text. Only B preserves both the feature and the function."
+      }
+    ]
+  },
+  {
+    stage: 2,
+    taskCode: "4B",
+    taskName: "Bridging Inference",
+    attributes: "A5: Inferential Comprehension",
+    qMatrix: "[1,1,0,0,1,0]",
+    description: "Student answers a question about something NOT directly stated but that can be worked out by connecting information in the text. Tests logical connection between explicit ideas.",
+    timing: "~60 sec/item",
+    items: [
+      {
+        label: "Sample 1",
+        difficulty: "moderate",
+        passage: {
+          text: "Jellyfish have been around for over 500 million years \u2014 long before dinosaurs appeared on Earth. Despite having no brain, no heart, and no blood, they are among the most successful animals in the ocean. Their bodies are made up of about 95% water, which makes them almost invisible to predators.\n\nIn recent years, jellyfish numbers have increased dramatically in many parts of the world. Scientists believe this may be linked to warmer ocean temperatures and overfishing, which removes the fish that compete with jellyfish for food. Some beaches in Australia have had to close during summer because of dangerous jellyfish swarms. While most jellyfish stings are harmless, a few species, including the box jellyfish found in northern Queensland, can be deadly.",
+          meta: "113 words \u2022 Information Report \u2022 Band M",
+          id: "jellyfish"
+        },
+        question: 'Based on the passage, why are jellyfish "almost invisible to predators"?',
+        options: [
+          "Because they swim very quickly.",
+          "Because their bodies are mostly water, so they are hard to see.",
+          "Because they live in very deep water where it is dark.",
+          "Because predators are afraid of their stings."
+        ],
+        correct: 1,
+        explanation: "Tests a bridging inference \u2014 connecting two pieces of information: (1) bodies are 95% water, and (2) almost invisible. The text states both facts but doesn't explicitly say the water content causes invisibility. The simplest type of inference: connecting two adjacent sentences."
+      },
+      {
+        label: "Sample 2",
+        difficulty: "hard",
+        passage: {
+          text: "When Priya moved to Melbourne from Chennai last year, she found the winter mornings almost unbearable. \u201CI had never felt anything below 15 degrees before,\u201D she told her classmates during a presentation. In Chennai, the temperature rarely drops below 20 degrees, even at night.\n\nPriya said she had to buy three warm jackets in her first week \u2014 something she had never owned before. Now, after a full year in Melbourne, Priya says she actually looks forward to cooler days. \u201CI\u2019ve got used to it,\u201D she laughs. \u201CBut I still don\u2019t understand why Australians wear thongs in winter.\u201D",
+          meta: "112 words \u2022 Narrative/Recount \u2022 Band M",
+          id: "priya"
+        },
+        question: "Why did Priya have to buy warm jackets in her first week?",
+        options: [
+          "Because she lost her luggage when she moved.",
+          "Because Melbourne shops were having a sale.",
+          "Because she came from a warm climate and didn\u2019t own winter clothing.",
+          "Because her classmates told her she needed them."
+        ],
+        correct: 2,
+        explanation: "Tests a multi-step bridging inference. Must connect: (1) Priya is from Chennai, (2) Chennai rarely drops below 20\u00b0, (3) she bought jackets, (4) she'd never owned them before. No single sentence states the conclusion. Tests whether students construct a coherent mental model."
+      }
+    ]
+  },
+  {
+    stage: 2,
+    taskCode: "4C",
+    taskName: "Elaborative Inference",
+    attributes: "A5: Inferential Comprehension",
+    qMatrix: "[1,1,0,0,1,0]",
+    description: "Student reads a passage, then answers a question about a character's feeling, motivation, or likely consequence. Tests the ability to go beyond text using textual evidence and world knowledge.",
+    timing: "~60 sec/item",
+    items: [
+      {
+        label: "Sample 1",
+        difficulty: "hard",
+        passage: {
+          text: "When Priya moved to Melbourne from Chennai last year, she found the winter mornings almost unbearable. \u201CI had never felt anything below 15 degrees before,\u201D she told her classmates during a presentation. In Chennai, the temperature rarely drops below 20 degrees, even at night.\n\nPriya said she had to buy three warm jackets in her first week \u2014 something she had never owned before. Now, after a full year in Melbourne, Priya says she actually looks forward to cooler days. \u201CI\u2019ve got used to it,\u201D she laughs. \u201CBut I still don\u2019t understand why Australians wear thongs in winter.\u201D",
+          meta: "112 words \u2022 Narrative/Recount \u2022 Band M",
+          id: "priya"
+        },
+        question: "How does Priya most likely feel about living in Melbourne now?",
+        options: [
+          "She is still unhappy and wants to go back to Chennai.",
+          "She has adapted and is mostly comfortable, though some things still surprise her.",
+          "She prefers Melbourne\u2019s weather to Chennai\u2019s.",
+          "She is worried about the next winter."
+        ],
+        correct: 1,
+        explanation: "Tests elaborative inference about emotional state. Must synthesise: the shift from 'unbearable' to 'looks forward to' and 'got used to it' signals adaptation. The humorous final comment about thongs signals comfort but also ongoing cultural surprise. C over-extends the evidence."
+      },
+      {
+        label: "Sample 2",
+        difficulty: "moderate",
+        passage: {
+          text: "Marcus stared at the maths test on his desk. He had studied for three hours the night before, but the questions looked completely unfamiliar. Around him, other students were already writing confidently. He glanced at the clock \u2014 only forty minutes left.\n\nHe read the first question again, then a third time. Slowly, something clicked. It was the same type of problem his teacher had shown them, just written differently. He picked up his pen and started writing.",
+          meta: "76 words \u2022 Narrative \u2022 Band M",
+          id: "marcus"
+        },
+        question: "What most likely caused Marcus to start writing?",
+        options: [
+          "He decided to copy the student next to him.",
+          "He realised the question was similar to something he had already learned.",
+          "The teacher gave the class a hint.",
+          "He gave up trying to understand and just guessed."
+        ],
+        correct: 1,
+        explanation: "Tests elaborative inference about cause and motivation. 'Something clicked' and 'the same type of problem his teacher had shown them, just written differently' \u2014 but the text doesn't explicitly say 'he recognised it.' The student must infer recognition caused confident action."
+      }
+    ]
+  },
+  {
+    stage: 2,
+    taskCode: "4D",
+    taskName: "Lexical Inference",
+    attributes: "A2 + A5: Vocabulary + Inferential",
+    qMatrix: "[1,1,0,0,1,0]",
+    description: "A word in the passage is highlighted. Student uses context clues to work out its meaning. Tests inferring word meaning from surrounding text \u2014 critical for EAL/D learners.",
+    timing: "~50 sec/item",
+    items: [
+      {
+        label: "Sample 1",
+        difficulty: "moderate",
+        passage: {
+          text: "Jellyfish have been around for over 500 million years \u2014 long before dinosaurs appeared on Earth. Despite having no brain, no heart, and no blood, they are among the most successful animals in the ocean. Their bodies are made up of about 95% water, which makes them almost invisible to predators.\n\nIn recent years, jellyfish numbers have increased dramatically in many parts of the world. Scientists believe this may be linked to warmer ocean temperatures and overfishing, which removes the fish that compete with jellyfish for food. Some beaches in Australia have had to close during summer because of dangerous jellyfish swarms. While most jellyfish stings are harmless, a few species, including the box jellyfish found in northern Queensland, can be deadly.",
+          meta: "113 words \u2022 Information Report \u2022 Band M",
+          id: "jellyfish"
+        },
+        question: "In the passage, what does 'dramatically' most likely mean?",
+        options: [
+          "sadly",
+          "by a large amount",
+          "slowly",
+          "in a surprising way"
+        ],
+        correct: 1,
+        explanation: "Tests lexical inference using context. 'Increased dramatically' \u2014 from 'increased' (quantitative change) and the paragraph consequences (beach closures, swarms), 'dramatically' means 'by a large amount.' Distractor A reflects the theatrical sense. D captures the 'surprising' connotation but not the primary sense."
+      },
+      {
+        label: "Sample 2",
+        difficulty: "moderate",
+        passage: {
+          text: "The school canteen has recently introduced a new menu focused on healthier options. Instead of pies and chips, students can now choose from wraps, salads, and fruit cups. The response has been mixed \u2014 some students appreciate the change, while others are frustrated that their favourite foods have been removed. The canteen manager says she hopes students will gradually embrace the new choices once they try them.",
+          meta: "67 words \u2022 Information Report \u2022 Band M",
+          id: "canteen"
+        },
+        question: "In the passage, what does 'embrace' most likely mean?",
+        options: [
+          "hug or hold tightly",
+          "accept and welcome",
+          "remember",
+          "argue about"
+        ],
+        correct: 1,
+        explanation: "Tests overriding a concrete/primary meaning for a figurative one. Most EAL/D students learn 'embrace' as a physical action (hug). Here, 'embrace the new choices' is metaphorical. Distractor A is the literal meaning. Separates surface-level vocabulary from flexible contextual interpretation."
+      }
+    ]
+  },
+
+  // ===== STAGE 3 =====
+  {
+    stage: 3,
+    taskCode: "5A",
+    taskName: "Author Stance",
+    attributes: "A6: Critical & Evaluative",
+    qMatrix: "[1,1,0,1,1,1]",
+    description: "Student reads a passage with an identifiable authorial perspective, then answers a question about the writer's attitude, bias, or purpose. Tests detecting perspective, not just content.",
+    timing: "~70 sec/item",
+    items: [
+      {
+        label: "Sample 1",
+        difficulty: "hard",
+        passage: {
+          text: "The government\u2019s decision to invest $2 billion in a new highway has been praised by business groups, who say it will reduce travel times and boost the local economy. However, environmental organisations have raised serious concerns. The proposed route cuts through a section of remnant bushland that is home to several endangered species, including a colony of greater gliders.\n\nOnce this habitat is gone, it cannot be restored. Transport Minister Claire Dawson acknowledged the environmental concerns but said the project had been \u201Cthoroughly assessed\u201D and that offsets would be provided. Critics argue that offsets rarely compensate for the loss of established ecosystems.",
+          meta: "107 words \u2022 News Report/Discussion \u2022 Band S",
+          id: "highway"
+        },
+        question: "What is the writer's attitude toward the highway project?",
+        options: [
+          "Strongly in favour \u2014 the economic benefits are clearly presented as more important.",
+          "Neutral \u2014 the writer presents both sides equally without expressing a personal view.",
+          "Slightly critical \u2014 the writer gives more space and stronger language to the environmental concerns.",
+          "Completely opposed \u2014 the writer argues the project should be cancelled."
+        ],
+        correct: 2,
+        explanation: "Tests detection of authorial stance in apparently balanced reporting. The environmental paragraph uses emotive language ('serious concerns,' 'cannot be restored,' 'rarely compensate'), while pro-highway language is attributed to others. The Minister's words are in scare quotes ('thoroughly assessed'), signalling journalistic distancing. B is the trap answer."
+      },
+      {
+        label: "Sample 2",
+        difficulty: "hard",
+        passage: {
+          text: "Social media has transformed the way young people communicate, and not a moment too soon. The days of waiting for a letter or hoping to bump into a friend at the shops are over. Today\u2019s teenagers can maintain friendships across continents, access mental health support at 3am, and organise social movements with a single post.\n\nOf course, there are risks \u2014 no technology comes without them \u2014 but the relentless focus on screen time and cyberbullying ignores the enormous benefits that digital connection brings to young lives.",
+          meta: "92 words \u2022 Persuasive/Argument \u2022 Band S",
+          id: "socialmedia"
+        },
+        question: "Which phrase best reveals the writer's personal opinion?",
+        options: [
+          '"transformed the way young people communicate"',
+          '"not a moment too soon"',
+          '"maintain friendships across continents"',
+          '"there are risks"'
+        ],
+        correct: 1,
+        explanation: "Tests locating the specific linguistic marker of opinion. A is factual. C is an example. D is a concession. Only B is a subjective evaluative phrase that reveals approval \u2014 it presupposes the old way was too slow. Tests distinguishing factual description from evaluative commentary."
+      }
+    ]
+  },
+  {
+    stage: 3,
+    taskCode: "5B",
+    taskName: "Rhetorical Purpose",
+    attributes: "A6: Critical & Evaluative",
+    qMatrix: "[1,1,1,0,1,1]",
+    description: "Student reads a passage and answers a question about HOW language features are used to achieve a particular effect on the reader. Tests metalinguistic awareness of rhetorical strategy.",
+    timing: "~70 sec/item",
+    items: [
+      {
+        label: "Sample 1",
+        difficulty: "hard",
+        passage: {
+          text: "Every year, Australians throw away enough food to fill 450,000 garbage trucks. That\u2019s enough trucks to stretch from Sydney to Perth and back. Meanwhile, one in five Australians reports running out of food at least once a year because they can\u2019t afford it.\n\nThe numbers are staggering, but what\u2019s even more troubling is how little attention the issue receives. While politicians debate energy prices and interest rates, tonnes of perfectly edible food are rotting in landfill, releasing methane that accelerates climate change. Food waste isn\u2019t just a household problem \u2014 it\u2019s an economic, environmental, and moral failure.",
+          meta: "103 words \u2022 Persuasive/Argument \u2022 Band S",
+          id: "foodwaste"
+        },
+        question: 'Why does the writer include the image of garbage trucks "stretching from Sydney to Perth and back"?',
+        options: [
+          "To give an exact scientific measurement of the waste.",
+          "To make a large, abstract number feel real and concrete to the reader.",
+          "To suggest that trucks are the main cause of food waste.",
+          "To compare Sydney and Perth\u2019s waste management systems."
+        ],
+        correct: 1,
+        explanation: "Tests understanding of rhetorical strategy \u2014 concrete analogy to make statistics vivid. '450,000 garbage trucks' becomes a spatial image the reader can visualise. Distractor A misidentifies analogy as measurement. C takes the truck image literally."
+      },
+      {
+        label: "Sample 2",
+        difficulty: "hard",
+        passage: {
+          text: "The proposal to ban cars from the city centre sounds extreme, but consider this: cities like Oslo, Barcelona, and Paris have already done it, and their economies haven\u2019t collapsed \u2014 in fact, local businesses report higher foot traffic and increased sales. Pedestrians spend more time browsing and more money per visit than drivers who rush in and out of parking garages.\n\nOpponents will say it\u2019s impractical, that people need their cars. But do they? With trains, trams, buses, and bike lanes, most trips to the city centre can be made without a car. The question isn\u2019t whether we can do it. It\u2019s whether we have the courage to try.",
+          meta: "114 words \u2022 Persuasive/Argument \u2022 Band S",
+          id: "carban"
+        },
+        question: 'Why does the writer use the structure "Opponents will say... But do they?"',
+        options: [
+          "To show respect for people who disagree.",
+          "To acknowledge the opposing argument and then immediately undermine it.",
+          "To admit that the idea is impractical.",
+          "To ask a genuine question that the writer doesn\u2019t know the answer to."
+        ],
+        correct: 1,
+        explanation: "Tests recognition of the rhetorical 'rebuttal' move. The writer names the objection then challenges it with a rhetorical question. A mistakes tactical acknowledgement for respect. C misreads the concessive structure. D treats the rhetorical question as genuine \u2014 a common EAL/D error."
+      }
+    ]
+  }
+];
+
+// ===== RENDERING =====
+const sidebar = document.getElementById('sidebar');
+const main = document.getElementById('main');
+
+let activeTaskIdx = 0;
+
+function renderSidebar() {
+  let html = '';
+  const stages = [
+    { num: 1, label: 'STAGE 1: Psycholinguistic Screening', time: '~8 min' },
+    { num: 2, label: 'STAGE 2: Sociocognitive Core', time: '~25 min' },
+    { num: 3, label: 'STAGE 3: Critical Extension', time: '~8 min' }
+  ];
+  stages.forEach(stage => {
+    const tasks = ITEMS.filter(t => t.stage === stage.num);
+    html += `<div class="sidebar-section">
+      <div class="stage-label">${stage.label} <span class="stage-time">${stage.time}</span></div>`;
+    tasks.forEach((task, i) => {
+      const globalIdx = ITEMS.indexOf(task);
+      html += `<div class="nav-item ${globalIdx === activeTaskIdx ? 'active' : ''}" onclick="selectTask(${globalIdx})">
+        <span class="task-code">${task.taskCode}</span>
+        <span>${task.taskName}</span>
+        <span class="item-count">${task.items.length}</span>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  sidebar.innerHTML = html;
+}
+
+function renderTask(idx) {
+  const task = ITEMS[idx];
+  activeTaskIdx = idx;
+  renderSidebar();
+
+  let html = `
+    <div class="task-header">
+      <div class="task-type-badge">
+        Stage ${task.stage} &bull; Task ${task.taskCode}
+        &nbsp;&mdash;&nbsp; ${task.timing}
+      </div>
+      <h2>${task.taskName}</h2>
+      <div class="q-matrix">Q-matrix: ${task.qMatrix} &nbsp;&bull;&nbsp; ${task.attributes}</div>
+      <div class="description">${task.description}</div>
+    </div>
+  `;
+
+  task.items.forEach((item, iIdx) => {
+    const diffClass = item.difficulty === 'easy' ? 'easy' : item.difficulty === 'moderate' ? 'moderate' : 'hard';
+    const cardId = `card-${idx}-${iIdx}`;
+    html += `<div class="item-card" id="${cardId}">
+      <div class="item-label">
+        ${item.label}
+        <span class="difficulty ${diffClass}">${item.difficulty}</span>
+      </div>`;
+
+    if (item.passage) {
+      html += `<div class="passage-box">
+        <div class="passage-label">Reading Passage</div>
+        ${item.passage.text.split('\n').map(p => `<p style="margin-bottom:8px">${p}</p>`).join('')}
+        <div class="passage-meta">${item.passage.meta}</div>
+      </div>`;
+    }
+
+    html += `<div class="question-text">${item.question}</div>
+      <div class="options-list">`;
+
+    const letters = ['A', 'B', 'C', 'D'];
+    item.options.forEach((opt, oIdx) => {
+      html += `<div class="option-item" id="opt-${idx}-${iIdx}-${oIdx}" onclick="selectOption(${idx},${iIdx},${oIdx})">
+        <span class="option-letter">${letters[oIdx]}.</span>
+        <span>${opt}</span>
+      </div>`;
+    });
+
+    html += `</div>
+      <button class="reveal-btn" id="reveal-${idx}-${iIdx}" onclick="revealAnswer(${idx},${iIdx})">Show Answer</button>
+      <div class="explanation" id="exp-${idx}-${iIdx}">
+        <div class="exp-label">Diagnostic Notes</div>
+        ${item.explanation}
+      </div>
+    </div>`;
+  });
+
+  // Navigation
+  html += '<div style="display:flex;justify-content:space-between;margin-top:20px;">';
+  if (idx > 0) {
+    html += `<button class="reveal-btn" style="background:#555" onclick="selectTask(${idx-1})">&larr; Previous: ${ITEMS[idx-1].taskName}</button>`;
+  } else {
+    html += '<div></div>';
+  }
+  if (idx < ITEMS.length - 1) {
+    html += `<button class="reveal-btn" onclick="selectTask(${idx+1})">Next: ${ITEMS[idx+1].taskName} &rarr;</button>`;
+  }
+  html += '</div>';
+
+  main.innerHTML = html;
+  main.scrollTop = 0;
+  window.scrollTo(0, 0);
+}
+
+function selectTask(idx) {
+  renderTask(idx);
+}
+
+function selectOption(taskIdx, itemIdx, optIdx) {
+  const item = ITEMS[taskIdx].items[itemIdx];
+  // Check if already revealed
+  const el = document.getElementById(`opt-${taskIdx}-${itemIdx}-${optIdx}`);
+  if (el.classList.contains('revealed')) return;
+
+  // Clear previous selection
+  for (let i = 0; i < 4; i++) {
+    document.getElementById(`opt-${taskIdx}-${itemIdx}-${i}`).classList.remove('selected');
+  }
+  el.classList.add('selected');
+}
+
+function revealAnswer(taskIdx, itemIdx) {
+  const item = ITEMS[taskIdx].items[itemIdx];
+  for (let i = 0; i < 4; i++) {
+    const el = document.getElementById(`opt-${taskIdx}-${itemIdx}-${i}`);
+    el.classList.add('revealed');
+    if (i === item.correct) {
+      el.classList.add('correct');
+    } else if (el.classList.contains('selected')) {
+      el.classList.add('incorrect');
+    } else {
+      el.classList.add('neutral');
+    }
+  }
+  document.getElementById(`exp-${taskIdx}-${itemIdx}`).classList.add('visible');
+  document.getElementById(`reveal-${taskIdx}-${itemIdx}`).disabled = true;
+  document.getElementById(`reveal-${taskIdx}-${itemIdx}`).textContent = 'Answer Revealed';
+}
+
+// Init
+renderTask(0);
+</script>
+</body>
+</html>

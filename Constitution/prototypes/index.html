@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnostiq — Item Browser</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0D7377; height: 100vh; display: flex; flex-direction: column; }
+
+  .top-bar {
+    background: #0D7377;
+    padding: 0 24px;
+    display: flex;
+    align-items: stretch;
+    height: 56px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    z-index: 100;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-right: 24px;
+    border-right: 1px solid rgba(255,255,255,0.2);
+    margin-right: 8px;
+  }
+  .brand h1 {
+    color: white;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+  .brand .sub {
+    color: rgba(255,255,255,0.7);
+    font-size: 12px;
+  }
+
+  .tabs {
+    display: flex;
+    align-items: stretch;
+  }
+  .tab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 20px;
+    color: rgba(255,255,255,0.7);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.15s;
+    text-decoration: none;
+  }
+  .tab:hover {
+    color: white;
+    background: rgba(255,255,255,0.08);
+  }
+  .tab.active {
+    color: white;
+    border-bottom-color: white;
+    background: rgba(255,255,255,0.1);
+  }
+  .tab .tab-icon {
+    font-size: 18px;
+  }
+  .tab .tab-label {
+    white-space: nowrap;
+  }
+
+  .content {
+    flex: 1;
+    background: white;
+  }
+  .content iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  /* Mobile */
+  @media (max-width: 700px) {
+    .brand .sub { display: none; }
+    .brand h1 { font-size: 15px; }
+    .tab { padding: 0 12px; font-size: 12px; }
+    .tab .tab-label { display: none; }
+    .tab .tab-icon { font-size: 22px; }
+    .top-bar { padding: 0 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="brand">
+    <div>
+      <h1>diagnostiq</h1>
+      <div class="sub">Item Browser</div>
+    </div>
+  </div>
+  <div class="tabs">
+    <a class="tab active" data-skill="reading" onclick="switchTab(this, 'reading')">
+      <span class="tab-icon">&#x1F4D6;</span>
+      <span class="tab-label">Reading</span>
+    </a>
+    <a class="tab" data-skill="listening" onclick="switchTab(this, 'listening')">
+      <span class="tab-icon">&#x1F3A7;</span>
+      <span class="tab-label">Listening</span>
+    </a>
+    <a class="tab" data-skill="speaking" onclick="switchTab(this, 'speaking')">
+      <span class="tab-icon">&#x1F399;&#xFE0F;</span>
+      <span class="tab-label">Speaking</span>
+    </a>
+    <a class="tab" data-skill="writing" onclick="switchTab(this, 'writing')">
+      <span class="tab-icon">&#x270D;&#xFE0F;</span>
+      <span class="tab-label">Writing</span>
+    </a>
+  </div>
+</div>
+
+<div class="content">
+  <iframe id="viewer" src="reading.html"></iframe>
+</div>
+
+<script>
+function switchTab(el, skill) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('viewer').src = skill + '.html';
+}
+
+// Support URL hash for direct linking
+const hash = window.location.hash.replace('#', '');
+if (['reading', 'listening', 'speaking', 'writing'].includes(hash)) {
+  const tab = document.querySelector(`[data-skill="${hash}"]`);
+  if (tab) switchTab(tab, hash);
+}
+</script>
+
+</body>
+</html>

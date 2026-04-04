@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnostiq Listening Assessment — Item Browser</title>
+<style>
+  :root {
+    --teal: #0D7377;
+    --teal-light: #E8F5F5;
+    --teal-dark: #095456;
+    --dark: #1A1A2E;
+    --grey: #555555;
+    --light-grey: #F5F5F5;
+    --border: #E0E0E0;
+    --correct: #2E7D32;
+    --correct-bg: #E8F5E9;
+    --wrong-bg: #FFEBEE;
+    --info-bg: #FFF8E1;
+    --audio-bg: #EDE7F6;
+    --audio-accent: #5E35B1;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--light-grey);
+    color: var(--dark);
+    line-height: 1.6;
+  }
+
+  .header {
+    background: var(--teal);
+    color: white;
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  .header .subtitle { font-size: 13px; opacity: 0.85; margin-top: 2px; }
+  .header .badge {
+    background: rgba(255,255,255,0.2);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: auto;
+    white-space: nowrap;
+  }
+
+  .container { display: flex; min-height: calc(100vh - 80px); }
+
+  .sidebar {
+    width: 280px;
+    min-width: 280px;
+    background: white;
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    position: sticky;
+    top: 80px;
+    height: calc(100vh - 80px);
+  }
+  .sidebar-section { padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .sidebar-section:last-child { border-bottom: none; }
+  .stage-label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.8px; color: var(--teal); padding: 8px 20px 4px;
+  }
+  .stage-label .stage-time { font-weight: 400; color: var(--grey); text-transform: none; letter-spacing: 0; }
+  .nav-item {
+    display: flex; align-items: center; padding: 10px 20px; cursor: pointer;
+    font-size: 13px; color: var(--dark); transition: all 0.15s; gap: 10px;
+    border-left: 3px solid transparent;
+  }
+  .nav-item:hover { background: var(--teal-light); }
+  .nav-item.active { background: var(--teal-light); border-left-color: var(--teal); font-weight: 600; }
+  .nav-item .task-code {
+    background: var(--teal); color: white; font-size: 10px; font-weight: 700;
+    padding: 2px 6px; border-radius: 4px; min-width: 28px; text-align: center;
+  }
+  .nav-item .item-count {
+    margin-left: auto; background: var(--light-grey); color: var(--grey);
+    font-size: 11px; padding: 1px 7px; border-radius: 10px;
+  }
+
+  .main { flex: 1; padding: 32px 40px; max-width: 860px; }
+
+  .task-header { margin-bottom: 24px; }
+  .task-header .task-type-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--teal); color: white; padding: 6px 14px;
+    border-radius: 6px; font-size: 12px; font-weight: 700; margin-bottom: 12px;
+  }
+  .task-header h2 { font-size: 24px; font-weight: 700; color: var(--dark); margin-bottom: 4px; }
+  .task-header .q-matrix {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 13px; color: var(--teal); margin-bottom: 8px;
+  }
+  .task-header .description { font-size: 14px; color: var(--grey); line-height: 1.5; }
+
+  .item-card {
+    background: white; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    margin-bottom: 24px; overflow: hidden; border: 1px solid var(--border);
+  }
+  .item-card .item-label {
+    background: var(--light-grey); padding: 10px 20px; font-size: 12px;
+    font-weight: 700; color: var(--grey); text-transform: uppercase;
+    letter-spacing: 0.5px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .item-card .item-label .difficulty {
+    margin-left: auto; font-size: 11px; font-weight: 500;
+    text-transform: none; letter-spacing: 0; padding: 2px 8px; border-radius: 10px;
+  }
+  .difficulty.easy { background: #E8F5E9; color: #2E7D32; }
+  .difficulty.moderate { background: #FFF3E0; color: #E65100; }
+  .difficulty.hard { background: #FFEBEE; color: #C62828; }
+
+  /* AUDIO SCRIPT BOX */
+  .audio-box {
+    background: var(--audio-bg); border: 1px solid #D1C4E9;
+    border-radius: 8px; padding: 16px 20px; margin: 16px 20px;
+    font-size: 14px; line-height: 1.7; color: var(--dark);
+  }
+  .audio-box .audio-label {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.6px; color: var(--audio-accent); margin-bottom: 10px;
+  }
+  .audio-box .audio-label .headphones {
+    font-size: 16px;
+  }
+  .audio-box .stage-direction {
+    font-style: italic; color: var(--grey); font-size: 13px;
+    margin-bottom: 8px;
+  }
+  .audio-box .speaker-label {
+    font-weight: 700; color: var(--audio-accent); margin-top: 10px;
+  }
+  .audio-box .audio-meta {
+    margin-top: 10px; font-size: 11px; color: var(--grey); font-style: italic;
+  }
+
+  /* IMAGE DESCRIPTION */
+  .image-option {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .image-desc {
+    background: #F3E5F5; color: #6A1B9A; font-size: 12px;
+    padding: 3px 8px; border-radius: 4px; font-weight: 500;
+  }
+
+  .question-text { padding: 16px 20px 8px; font-size: 15px; font-weight: 600; color: var(--dark); }
+
+  .options-list { padding: 8px 20px 16px; list-style: none; }
+  .option-item {
+    display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px;
+    margin: 4px 0; border-radius: 8px; cursor: pointer;
+    border: 2px solid var(--border); transition: all 0.15s; font-size: 14px;
+  }
+  .option-item:hover:not(.revealed) { border-color: var(--teal); background: var(--teal-light); }
+  .option-item .option-letter { font-weight: 700; color: var(--grey); min-width: 20px; }
+  .option-item.selected { border-color: var(--teal); background: var(--teal-light); }
+  .option-item.revealed.correct { border-color: var(--correct); background: var(--correct-bg); }
+  .option-item.revealed.correct .option-letter { color: var(--correct); }
+  .option-item.revealed.incorrect { border-color: #C62828; background: var(--wrong-bg); opacity: 0.6; }
+  .option-item.revealed.neutral { opacity: 0.5; }
+
+  .reveal-btn {
+    display: block; margin: 0 20px 16px; padding: 10px 20px;
+    background: var(--teal); color: white; border: none; border-radius: 8px;
+    font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.15s;
+  }
+  .reveal-btn:hover { background: var(--teal-dark); }
+  .reveal-btn:disabled { background: #ccc; cursor: default; }
+
+  .explanation {
+    margin: 0 20px 20px; padding: 16px; background: var(--info-bg);
+    border-radius: 8px; font-size: 13px; line-height: 1.6; color: var(--dark);
+    display: none;
+  }
+  .explanation.visible { display: block; }
+  .explanation .exp-label {
+    font-weight: 700; color: #F57F17; font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;
+  }
+
+  /* MATCHING TASK */
+  .matching-area { padding: 12px 20px 16px; }
+  .matching-row {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 10px; font-size: 14px;
+  }
+  .matching-row .speaker-tag {
+    background: var(--audio-accent); color: white; font-size: 12px;
+    font-weight: 700; padding: 4px 10px; border-radius: 6px; min-width: 80px; text-align: center;
+  }
+  .matching-select {
+    flex: 1; padding: 10px 12px; border: 2px solid var(--border);
+    border-radius: 8px; font-size: 14px; cursor: pointer;
+    background: white; appearance: auto;
+  }
+  .matching-select:focus { border-color: var(--teal); outline: none; }
+  .matching-select.correct-match { border-color: var(--correct); background: var(--correct-bg); }
+  .matching-select.incorrect-match { border-color: #C62828; background: var(--wrong-bg); }
+  .matching-options-list {
+    margin-top: 12px; padding: 10px 14px; background: var(--light-grey);
+    border-radius: 8px; font-size: 13px; color: var(--grey);
+  }
+  .matching-options-list div { margin: 4px 0; }
+
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>Diagnostiq Listening Assessment</h1>
+    <div class="subtitle">Item Browser &mdash; Sample Items</div>
+  </div>
+  <div class="badge">Secondary &bull; Years 7&ndash;12</div>
+</div>
+
+<div class="container">
+  <div class="sidebar" id="sidebar"></div>
+  <div class="main" id="main"></div>
+</div>
+
+<script>
+const ITEMS = [
+  // ===== STAGE 1 =====
+  {
+    stage: 1,
+    taskCode: "1A",
+    taskName: "Spoken Word Identification",
+    attributes: "A1: Phonological Decoding",
+    qMatrix: "[1,0,0,0,0,0]",
+    description: "Student hears a single word spoken once at natural speed. Four written options appear on screen. Student selects the word they heard. Tests phonological discrimination.",
+    timing: "~10 sec/item",
+    items: [
+      {
+        label: "Sample 1",
+        difficulty: "easy",
+        type: "mc",
+        audio: {
+          script: '"ship"',
+          direction: "Single word, spoken once, natural speed, clear Australian English"
+        },
+        question: "Which word did you hear?",
+        options: ["ship", "chip", "sheep", "cheap"],
+        correct: 0,
+        explanation: "Tests /\u0283/ vs /t\u0283/ distinction (ship/chip) and /\u026A/ vs /i\u02D0/ vowel length (ship/sheep). A student who selects 'sheep' may have L1 interference on tense/lax vowels (common in Mandarin, Korean, Arabic speakers). 'Chip' suggests affricate/fricative confusion."
+      },
+      {
+        label: "Sample 2",
+        difficulty: "moderate",
+        type: "mc",
+        audio: {
+          script: '"collect"',
+          direction: "Single word, spoken once, natural speed, stress on second syllable"
+        },
+        question: "Which word did you hear?",
+        options: ["correct", "collect", "protect", "connect"],
+        correct: 1,
+        explanation: "Tests multisyllabic discrimination. All four options share the /k\u2026ekt/ rhythmic template, so the student must process individual segments, not just prosodic shape."
+      }
+    ]
+  },
+  {
+    stage: 1,
+    taskCode: "1B",
+    taskName: "Word Spotting in Connected Speech",
+    attributes: "A1: Phonological Decoding",
+    qMatrix: "[1,0,0,0,0,0]",
+    description: "Student hears a short sentence at natural speed with connected speech features (linking, assimilation, weak forms). Selects which word was in the sentence.",
+    timing: "~15 sec/item",
+    items: [
+      {
+        label: "Sample 1",
+        difficulty: "moderate",
+        type: "mc",
+        audio: {
+          script: '"Can you grab the pens from the top drawer?"',
+          direction: "Natural speed, 'from the' reduced to /fr\u0259m\u0259/, 'top drawer' linked"
+        },
+        question: "Which word was in the sentence?",
+        options: ["plans", "pens", "pins", "pants"],
+        correct: 1,
+        explanation: "Tests segmentation of a target word embedded in connected speech. All distractors share the /p\u2026n/ frame. The sentence context provides no semantic shortcut \u2014 all four words are plausible objects from a drawer."
+      },
+      {
+        label: "Sample 2",
+        difficulty: "moderate",
+        type: "mc",
+        audio: {
+          script: '"I think we need to leave before it gets dark."',
+          direction: "Natural speed, 'need to' reduced to /ni\u02D0d\u0259/, 'before it' linked"
+        },
+        question: "Which word was in the sentence?",
+        options: ["leave", "live", "believe", "love"],
+        correct: 0,
+        explanation: "Tests extraction of a monosyllabic verb from natural speech. 'Live' is the minimal pair; 'believe' tests whether the student incorrectly segments 'be-leave' from 'before\u2026leave'; 'love' tests vowel discrimination."
+      }
+    ]
+  },
+  {
+    stage: 1,
+    taskCode: "2A",
+    taskName: "Picture Match",
+    attributes: "A2: Spoken Vocabulary",
+    qMatrix: "[1,1,0,0,0,0]",
+    description: "Student hears a word or short phrase spoken once. Four images appear on screen (no text labels). Student selects the matching image. Zero reading load.",
+    timing: "~10 sec/item",
+    items: [
+      {
+        label: "Sample 1",
+        difficulty: "easy",
+        type: "mc",
+        audio: {
+          script: '"thermometer"',
+          direction: "Single word, spoken once, natural speed"
+        },
+        question: "Select the picture that matches what you heard.",
+        options: [
+          "\uD83C\uDF21\uFE0F A thermometer",
+          "\uD83C\uDF24\uFE0F A barometer / weather gauge",
+          "\uD83E\uDE7A A stethoscope",
+          "\uD83D\uDCCF A ruler"
+        ],
+        optionImages: true,
+        correct: 0,
+        explanation: "Tests whether the heard word activates a meaning representation. Distractors B and C are from the same semantic field (scientific instruments). D tests whether a student who doesn't know 'thermometer' defaults to the most common classroom measuring tool."
+      },
+      {
+        label: "Sample 2",
+        difficulty: "moderate",
+        type: "mc",
+        audio: {
+          script: '"pour the water into the container"',
+          direction: "Short phrase, spoken once, natural speed"
+        },
+        question: "Select the picture that matches what you heard.",
+        options: [
+          "\uD83E\uDD43 Someone drinking water from a glass",
+          "\uD83E\uDED7 Someone pouring water from a jug into a bowl",
+          "\uD83D\uDEB0 Someone turning on a tap",
+          "\uD83C\uDF72 Someone stirring water in a pot"
+        ],
+        optionImages: true,
+        correct: 1,
+        explanation: "Tests vocabulary in a phrasal context. The key word is 'pour' \u2014 all images involve water, so the student must know the action verb. This is harder because the student must process a verb + prepositional phrase."
+      }
+    ]
+  },
+  {
+    stage: 1,
+    taskCode: "2B",
+    taskName: "Spoken Synonym Match",
+    attributes: "A2: Spoken Vocabulary",
+    qMatrix: "[1,1,0,0,0,0]",
+    description: "Student hears a word spoken once. Four written options appear on screen. Student selects the word closest in meaning.",
+    timing: "~10 sec/item",
+    items: [
+      {
+        label: "Sample 1",
+        difficulty: "easy",
+        type: "mc",
+        audio: {
+          script: '"enormous"',
+          direction: "Single word, spoken once, clear enunciation"
+        },
+        question: "Which word means the same as what you heard?",
+        options: ["tiny", "heavy", "very big", "round"],
+        correct: 2,
+        explanation: "Tests depth of vocabulary via the auditory channel. Distractor A is the antonym. B is semantically related but incorrect. A student who gets word identification right but misses this has a vocabulary gap, not a phonological gap \u2014 that's the diagnostic separation between A1 and A2."
+      },
+      {
+        label: "Sample 2",
+        difficulty: "moderate",
+        type: "mc",
+        audio: {
+          script: '"postpone"',
+          direction: "Single word, spoken once, stress on second syllable"
+        },
+        question: "Which word means the same as what you heard?",
+        options: ["cancel", "delay", "prepare", "finish"],
+        correct: 1,
+        explanation: "Tests academic/Tier 2 vocabulary. Distractor A ('cancel') is the most revealing: a student who selects it understands the word relates to something not happening on time but conflates delay with cancellation."
+      }
+    ]
+  },
+
+  // ===== STAGE 2 =====
+  {
+    stage: 2,
+    taskCode: "3A",
+    taskName: "Gist Match",
+    attributes: "A3: Gist Comprehension",
+    qMatrix: "[1,1,1,0,0,0]",
+    description: "Student hears a short clip (15\u201340 seconds). Four options appear on screen with image + text label. Student selects the topic or main idea.",
+    timing: "~45 sec/item",
+    items: [
+      {
+        label: "Sample 1",
+        difficulty: "moderate",
+        type: "mc",
+        audio: {
+          script: '"Attention all Year 9 students. Due to the wet weather this week, the athletics carnival scheduled for Friday has been moved to the following Wednesday. Please check with your PE teacher for updated event times. All students who have already submitted permission forms do not need to submit again."',
+          direction: "School announcement, female voice, ~20 seconds"
+        },
+        question: "What is this announcement mainly about?",
+        options: [
+          "\uD83C\uDF27\uFE0F A weather warning",
+          "\uD83D\uDCC5 A change to the sports carnival date",
+          "\uD83D\uDCDD How to submit permission forms",
+          "\uD83C\uDFC3 New PE class timetable"
+        ],
+        optionImages: true,
+        correct: 1,
+        explanation: "Tests whether the student can identify the main purpose of a spoken text. All four options reference details mentioned in the clip, but only B captures the central point. A student at the Emerging level who has gist but not detail will correctly identify the date change."
+      },
+      {
+        label: "Sample 2",
+        difficulty: "moderate",
+        type: "mc",
+        audio: {
+          script: 'Student A: "Hey, did you end up going to the careers expo yesterday?"\nStudent B: "Yeah, it was actually really good. I talked to someone from the nursing program at Griffith. They said you can do placements in second year."\nStudent A: "Oh nice. I went to the engineering stand but the queue was so long I gave up and just grabbed some brochures."\nStudent B: "Ha, yeah, the popular ones were packed."',
+          direction: "Conversation between two students, ~25 seconds"
+        },
+        question: "What are the students mainly talking about?",
+        options: [
+          "\uD83C\uDFEB Choosing a university",
+          "\uD83D\uDCBC Their experience at the careers expo",
+          "\uD83C\uDFE5 A nursing degree",
+          "\uD83D\uDC65 Waiting in lines"
+        ],
+        optionImages: true,
+        correct: 1,
+        explanation: "Tests gist across a two-speaker conversation. The nursing program (C) and the queue (D) are details; the university (A) is an inference. Only B captures the overall topic."
+      }
+    ]
+  },
+  {
+    stage: 2,
+    taskCode: "3B",
+    taskName: "Text-Type Identification",
+    attributes: "A3: Gist Comprehension",
+    qMatrix: "[1,1,1,0,0,0]",
+    description: "Student hears a short clip (15\u201330 seconds). Four text-type labels appear. Student identifies what kind of spoken text it is. Tests genre recognition.",
+    timing: "~40 sec/item",
+    items: [
+      {
+        label: "Sample 1",
+        difficulty: "moderate",
+        type: "mc",
+        audio: {
+          script: '"So what happens is the warm air rises, and as it rises it cools down. When it cools down enough, the water vapour in the air condenses into tiny droplets, and that\u2019s what forms clouds. The higher the air rises, the more it cools, and eventually you get rain."',
+          direction: "Male voice, measured pace, ~20 seconds"
+        },
+        question: "What kind of spoken text is this?",
+        options: [
+          "A story about the weather",
+          "A set of instructions",
+          "An explanation of how something works",
+          "A news report"
+        ],
+        correct: 2,
+        explanation: "Tests genre recognition. The discourse pattern (cause \u2192 effect, 'what happens is') signals explanation rather than narrative, instruction, or report. The student doesn't need to understand every word about condensation."
+      },
+      {
+        label: "Sample 2",
+        difficulty: "easy",
+        type: "mc",
+        audio: {
+          script: '"First, make sure your phone is connected to Wi-Fi. Then open the settings app and tap on \u2018Software Update.\u2019 If there\u2019s an update available, tap \u2018Download and Install.\u2019 Don\u2019t turn off your phone while it\u2019s updating."',
+          direction: "Female voice, upbeat, ~15 seconds"
+        },
+        question: "What kind of spoken text is this?",
+        options: [
+          "A conversation between friends",
+          "A set of instructions",
+          "A product advertisement",
+          "An explanation of how something works"
+        ],
+        correct: 1,
+        explanation: "Tests recognition of procedural discourse markers ('first,' 'then,' 'make sure,' imperative verbs). The key discrimination is B vs D: instructions tell you WHAT TO DO while explanations tell you HOW SOMETHING WORKS."
+      }
+    ]
+  },
+  {
+    stage: 2,
+    taskCode: "4A",
+    taskName: "MCSA Detail",
+    attributes: "A4: Detail Extraction",
+    qMatrix: "[1,1,1,1,0,0]",
+    description: "Student hears a passage (30\u201360 seconds). A factual question appears AFTER audio. Single play. Tests extraction of specific stated information.",
+    timing: "~60\u201390 sec/item",
+    items: [
+      {
+        label: "Sample 1",
+        difficulty: "easy",
+        type: "mc",
+        audio: {
+          script: '"Hi Marco, it\u2019s Sarah from the library. I\u2019m just calling to let you know that the book you requested has come in \u2014 it\u2019s the one on Australian wildlife. You can pick it up from the front desk anytime before four-thirty. We\u2019re closed on Sunday but open every other day this week. Oh, and you still have two books overdue from last month, so if you could bring those back when you come in, that\u2019d be great. Thanks!"',
+          direction: "Voicemail message, female voice, ~35 seconds"
+        },
+        question: "What time does Marco need to pick up the book by?",
+        options: ["Before 3:30", "Before 4:00", "Before 4:30", "Before 5:00"],
+        correct: 2,
+        explanation: "Tests extraction of a specific numeric detail from continuous speech. The distractor times are close enough that the student must have processed the specific number, not guessed from schema."
+      },
+      {
+        label: "Sample 2",
+        difficulty: "easy",
+        type: "mc",
+        audio: {
+          script: '"Right, so for the group project on renewable energy, I want you in groups of three or four. Each group needs to pick one type of renewable energy \u2014 solar, wind, hydro, or geothermal \u2014 and prepare a five-minute presentation. The presentation is due in two weeks, on the 18th of March. You\u2019ll also need to hand in a one-page summary with your references. Any questions?"',
+          direction: "Teacher addressing a class, male voice, ~40 seconds"
+        },
+        question: "How long should each group\u2019s presentation be?",
+        options: ["Three minutes", "Four minutes", "Five minutes", "Ten minutes"],
+        correct: 2,
+        explanation: "Tests detail extraction from classroom instructional speech. Multiple details compete for attention (group size, energy types, due date, summary requirement). The student must isolate the specific detail the question asks about."
+      }
+    ]
+  },
+  {
+    stage: 2,
+    taskCode: "4B",
+    taskName: "Paraphrase Match",
+    attributes: "A4: Detail Extraction",
+    qMatrix: "[1,1,1,1,0,0]",
+    description: "Student hears a passage (30\u201360 seconds). Four statements appear. Student selects the one that accurately restates something from the passage.",
+    timing: "~60\u201390 sec/item",
+    items: [
+      {
+        label: "Sample 1",
+        difficulty: "moderate",
+        type: "mc",
+        audio: {
+          script: '"A new community garden has opened in Southport, giving local residents a chance to grow their own fruit and vegetables. The garden has forty individual plots, and each one costs twenty dollars per year to rent. The project was funded by a council grant and took six months to build."',
+          direction: "News-style report, female voice, ~30 seconds"
+        },
+        question: "Which statement matches what was said?",
+        options: [
+          "The garden has space for forty families to live.",
+          "People can rent a small plot of land to grow food.",
+          "The garden was built by local volunteers in six weeks.",
+          "The council charges twenty dollars per month for each plot."
+        ],
+        correct: 1,
+        explanation: "Tests paraphrase recognition. B restates the core idea using different words ('individual plots' \u2192 'small plot of land'; 'fruit and vegetables' \u2192 'food'). Distractors each distort one specific detail (plots \u2192 families; six months \u2192 six weeks; per year \u2192 per month)."
+      },
+      {
+        label: "Sample 2",
+        difficulty: "moderate",
+        type: "mc",
+        audio: {
+          script: '"So our group looked at how much water Australians use at home. We found that the average person uses about 200 litres per day, and the biggest use is actually the shower \u2014 that\u2019s about a third of total household water. The second biggest is the washing machine, and then the garden. We were surprised that toilets use less water than we expected."',
+          direction: "Student giving a short oral report, male voice, ~35 seconds"
+        },
+        question: "Which statement matches what was said?",
+        options: [
+          "Australians use the most water in the garden.",
+          "Showers account for about one-third of water used at home.",
+          "Each household uses 200 litres of water per day.",
+          "Toilets were the biggest surprise because they use the most water."
+        ],
+        correct: 1,
+        explanation: "Tests paraphrase recognition in an academic oral report. A misstates the ranking; C shifts 'per person' to 'per household'; D distorts the finding (toilets used LESS than expected, not the most)."
+      }
+    ]
+  },
+  {
+    stage: 2,
+    taskCode: "5A",
+    taskName: "MCSA Inference",
+    attributes: "A5: Propositional Inference",
+    qMatrix: "[1,1,1,1,1,0]",
+    description: "Student hears a passage. A question requiring integration of stated facts appears AFTER audio. The answer is never explicitly stated.",
+    timing: "~60\u201390 sec/item",
+    items: [
+      {
+        label: "Sample 1",
+        difficulty: "moderate",
+        type: "mc",
+        audio: {
+          script: 'Student A: "Did you see Ms Chen\u2019s face when she read out the results? She looked so pleased."\nStudent B: "Yeah, well, we did get the highest score in the year level. Eighty-seven percent average."\nStudent A: "That\u2019s way better than last term when we only got sixty-two."\nStudent B: "I think the study group helped. We should definitely keep doing that."',
+          direction: "Conversation, two students, ~35 seconds"
+        },
+        question: "Why was Ms Chen pleased?",
+        options: [
+          "The students had formed a study group.",
+          "The class had significantly improved their results.",
+          "She liked reading out results to the class.",
+          "The students scored eighty-seven percent on every test."
+        ],
+        correct: 1,
+        explanation: "Tests bridging inference. No one explicitly says the improvement caused Ms Chen's reaction. The student must connect: (1) Ms Chen looked pleased, (2) 87% vs 62% last term, (3) therefore the improvement caused the reaction."
+      },
+      {
+        label: "Sample 2",
+        difficulty: "moderate",
+        type: "mc",
+        audio: {
+          script: 'Mum: "Hi love, how was the excursion?"\nStudent: "It was OK. The bus took ages though \u2014 like two hours each way."\nMum: "Oh, that\u2019s a long trip. Did you eat on the bus?"\nStudent: "No, they said we had to wait. By the time we got there I was starving and I couldn\u2019t really concentrate on the guide because all I could think about was lunch."\nMum: "Hmm, I should have packed you something for the bus."',
+          direction: "Phone conversation, ~40 seconds"
+        },
+        question: "Why couldn\u2019t the student concentrate on the guide?",
+        options: [
+          "The guide was boring.",
+          "The student was tired from the long bus ride.",
+          "The student was too hungry to focus.",
+          "The student doesn\u2019t like excursions."
+        ],
+        correct: 2,
+        explanation: "Tests elaborative inference \u2014 connecting cause and effect across multiple utterances. Must integrate: no food on bus \u2192 starving on arrival \u2192 couldn't concentrate because thinking about lunch."
+      }
+    ]
+  },
+  {
+    stage: 2,
+    taskCode: "5B",
+    taskName: "Lexical Inference",
+    attributes: "A5: Propositional Inference",
+    qMatrix: "[1,1,1,0,1,0]",
+    description: "Student hears a passage containing an unfamiliar word. A question asks what the word probably means based on spoken context.",
+    timing: "~60\u201390 sec/item",
+    items: [
+      {
+        label: "Sample 1",
+        difficulty: "moderate",
+        type: "mc",
+        audio: {
+          script: '"When European settlers first arrived in Australia, many of them weren\u2019t prepared for how dry and harsh the land was. Crops that grew well in England wouldn\u2019t survive here. The soil was poor, there wasn\u2019t enough rain, and the heat was relentless. For those early farmers, it was an incredibly arduous life."',
+          direction: "Teacher explanation, female voice, ~30 seconds"
+        },
+        question: "Based on what you heard, what does 'arduous' probably mean?",
+        options: [
+          "Exciting and adventurous",
+          "Extremely difficult and exhausting",
+          "Lonely and isolated",
+          "Simple but boring"
+        ],
+        correct: 1,
+        explanation: "Tests lexical inference from spoken context. The surrounding details (dry, harsh, crops failing, poor soil, relentless heat) all converge on difficulty and hardship. Addresses the ACARA Developing descriptor about students who use context as a resource for unfamiliar vocabulary."
+      },
+      {
+        label: "Sample 2",
+        difficulty: "easy",
+        type: "mc",
+        audio: {
+          script: '"So the two characters have been arguing the whole book, right? They can\u2019t agree on anything. But at the end, after everything that\u2019s happened, they finally sit down and talk properly, and they sort it all out. They reach a compromise \u2014 both of them give up something so they can move forward together."',
+          direction: "Student retelling a story, male voice, ~30 seconds"
+        },
+        question: "Based on what you heard, what does 'compromise' probably mean?",
+        options: [
+          "One person wins the argument completely.",
+          "Both people give up something to reach an agreement.",
+          "They agree to stop talking about the problem.",
+          "One person apologises and the other forgives them."
+        ],
+        correct: 1,
+        explanation: "Tests lexical inference with a word that is partially glossed by the speaker ('both of them give up something so they can move forward together'). A gentler version calibrated for the Developing phase."
+      }
+    ]
+  },
+
+  // ===== STAGE 3 =====
+  {
+    stage: 3,
+    taskCode: "6A",
+    taskName: "Tone & Purpose Identification",
+    attributes: "A6: Pragmatic Inference",
+    qMatrix: "[1,1,1,1,1,1]",
+    description: "Student hears a short spoken text (20\u201340 seconds). Four descriptions of the speaker's purpose or attitude appear. Tests the gap between literal content and pragmatic meaning.",
+    timing: "~60 sec/item",
+    items: [
+      {
+        label: "Sample 1",
+        difficulty: "hard",
+        type: "mc",
+        audio: {
+          script: '"Hi, um, yes, I\u2019m calling about a delivery we received about twenty minutes ago? We ordered the lamb with rice, but we\u2019ve actually received the chicken, and, look, it\u2019s probably not a big deal, but my daughter is actually allergic to chicken, so we can\u2019t really eat this one. Would it be possible to\u2026 get the right order sent out?"',
+          direction: "Phone call to a restaurant, female voice, very polite tone but clearly frustrated, ~25 seconds"
+        },
+        question: "How is the speaker feeling and what is she trying to do?",
+        options: [
+          "She is angry and wants a refund for the meal.",
+          "She is frustrated but is politely trying to get the mistake fixed.",
+          "She is worried about her daughter and wants medical advice.",
+          "She is confused about what she ordered."
+        ],
+        correct: 1,
+        explanation: "Tests the gap between literal content and pragmatic meaning. The speaker SAYS 'it\u2019s probably not a big deal' (downplaying) while the situation IS a big deal (allergy). The hedging ('um,' 'actually,' 'would it be possible') signals politeness masking frustration. ACARA Consolidating: 'interpret the intention of the speaker using their knowledge of how intonation, volume and lexical choice create meaning.'"
+      },
+      {
+        label: "Sample 2",
+        difficulty: "hard",
+        type: "mc",
+        audio: {
+          script: '"So apparently, the homework is only going to take ten minutes. [pause, slight laugh] Yeah, sure, ten minutes. That\u2019s what they said about the last one too, and I was up until midnight. I reckon this one\u2019s going to take about a week. Maybe two. I might need to move into the library."',
+          direction: "Student presenting to class, male voice, enthusiastic but clearly exaggerating for humour, ~25 seconds"
+        },
+        question: "How is the speaker feeling and what is he trying to do?",
+        options: [
+          "He is genuinely worried about the homework and wants help.",
+          "He is annoyed at the teacher and wants to make a formal complaint.",
+          "He is using humour and exaggeration to express that the homework will take much longer than claimed.",
+          "He is planning to spend a week living in the library."
+        ],
+        correct: 2,
+        explanation: "Tests recognition of humour, sarcasm, and hyperbole \u2014 ACARA's 'identify everyday humour in spoken texts' (Consolidating). D is the literal interpretation trap. A misreads the register. A Developing-phase student may miss the humour layer."
+      }
+    ]
+  },
+  {
+    stage: 3,
+    taskCode: "6B",
+    taskName: "Speaker Intent Match",
+    attributes: "A6: Pragmatic Inference",
+    qMatrix: "[1,1,1,1,1,1]",
+    description: "Student hears 3 different speakers on the same topic. After all three play, the student matches each speaker to an attitude descriptor. All-or-nothing scoring. Double play.",
+    timing: "~3\u20134 min/set",
+    items: [
+      {
+        label: "Sample 1",
+        difficulty: "hard",
+        type: "matching",
+        audio: {
+          script: 'Topic: Should schools ban mobile phones during class?\n\nSpeaker 1 (female, measured, balanced tone):\n"I think there are good arguments on both sides, to be honest. Phones can be really distracting, but they can also be useful learning tools. Maybe instead of a total ban, schools could have clear rules about when phones can and can\u2019t be used."\n\nSpeaker 2 (male, firm, slightly impatient tone):\n"Look, we\u2019ve tried the \u2018rules\u2019 approach and it doesn\u2019t work. Kids just hide them under the desk. The only thing that actually works is taking them away completely. No phones from nine to three. End of story."\n\nSpeaker 3 (female, enthusiastic, slightly dismissive of opposition):\n"Banning phones is so outdated. Every student has a computer in their pocket and we\u2019re telling them to put it away? We should be teaching them to use technology responsibly, not pretending it doesn\u2019t exist."',
+          direction: "Three speakers, ~20 seconds each, same topic"
+        },
+        question: "Match each speaker to their attitude:",
+        speakers: ["Speaker 1", "Speaker 2", "Speaker 3"],
+        matchOptions: [
+          "A. Strongly supports a complete phone ban",
+          "B. Wants to find a middle ground with clear rules",
+          "C. Believes phones should be embraced as learning tools",
+          "D. Thinks the issue is not important enough to discuss",
+          "E. Wants students to decide the rules for themselves"
+        ],
+        correctMatches: [1, 0, 2], // B, A, C (0-indexed into matchOptions)
+        explanation: "Tests distinguishing three different attitudes using prosodic AND lexical cues. Speaker 1's hedging ('to be honest,' 'maybe') signals compromise (B). Speaker 2's definitive language ('the only thing,' 'end of story') signals strong advocacy (A). Speaker 3's dismissal ('so outdated,' 'pretending') signals pro-technology conviction (C). Distractors D and E are plausible attitudes not represented."
+      },
+      {
+        label: "Sample 2",
+        difficulty: "hard",
+        type: "matching",
+        audio: {
+          script: 'Topic: A school group deciding where to go for their end-of-year outing.\n\nSpeaker 1 (male, hesitant, slightly anxious tone):\n"I\u2026 don\u2019t know about the theme park. It\u2019s, um, kind of expensive, and not everyone might be able to afford it. Maybe we should think about something that\u2019s, like, more inclusive?"\n\nSpeaker 2 (female, excited, fast-paced, enthusiastic):\n"Oh come on, it\u2019ll be amazing! We\u2019ve been talking about this for ages. Everyone wants to go \u2014 it\u2019s literally the best option. We should just book it before tickets sell out!"\n\nSpeaker 3 (male, calm, pragmatic, slightly detached):\n"I\u2019d suggest we put it to a vote. Get three options, let everyone choose anonymously, and go with whatever gets the most votes. That way nobody can complain afterwards."',
+          direction: "Three speakers, school group decision, ~20 seconds each"
+        },
+        question: "Match each speaker to their attitude:",
+        speakers: ["Speaker 1", "Speaker 2", "Speaker 3"],
+        matchOptions: [
+          "A. Concerned about fairness and wants an affordable option",
+          "B. Very enthusiastic and wants to go to the theme park immediately",
+          "C. Wants a democratic process so the group decides fairly",
+          "D. Doesn\u2019t care where they go and wants to skip the outing",
+          "E. Thinks the group should ask a teacher to decide for them"
+        ],
+        correctMatches: [0, 1, 2], // A, B, C
+        explanation: "Tests pragmatic inference in peer-group dynamics. Speaker 1's hesitancy and hedging signals concern and discomfort (A). Speaker 2's rapid pace and superlatives ('amazing,' 'literally the best') signal uncritical enthusiasm (B). Speaker 3's calm, procedural language ('I\u2019d suggest,' 'that way') signals pragmatic detachment (C). Tests real-world social listening at the Consolidating phase."
+      }
+    ]
+  }
+];
+
+// ===== RENDERING =====
+const sidebar = document.getElementById('sidebar');
+const main = document.getElementById('main');
+let activeTaskIdx = 0;
+
+function renderSidebar() {
+  let html = '';
+  const stages = [
+    { num: 1, label: 'STAGE 1: Psycholinguistic Screening', time: '~4 min' },
+    { num: 2, label: 'STAGE 2: Sociocognitive Core', time: '~11 min' },
+    { num: 3, label: 'STAGE 3: Pragmatic Extension', time: '~5 min' }
+  ];
+  stages.forEach(stage => {
+    const tasks = ITEMS.filter(t => t.stage === stage.num);
+    html += `<div class="sidebar-section">
+      <div class="stage-label">${stage.label} <span class="stage-time">${stage.time}</span></div>`;
+    tasks.forEach(task => {
+      const globalIdx = ITEMS.indexOf(task);
+      html += `<div class="nav-item ${globalIdx === activeTaskIdx ? 'active' : ''}" onclick="selectTask(${globalIdx})">
+        <span class="task-code">${task.taskCode}</span>
+        <span>${task.taskName}</span>
+        <span class="item-count">${task.items.length}</span>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  sidebar.innerHTML = html;
+}
+
+function renderAudioBox(audio) {
+  const lines = audio.script.split('\n');
+  let scriptHtml = '';
+  lines.forEach(line => {
+    const speakerMatch = line.match(/^(Speaker \d+|Student [AB]|Mum|Student)(\s*\(.*?\))?:\s*/);
+    if (speakerMatch) {
+      const rest = line.substring(speakerMatch[0].length);
+      scriptHtml += `<div class="speaker-label">${speakerMatch[1]}${speakerMatch[2] || ''}:</div><div style="margin-left:8px;margin-bottom:6px">${rest}</div>`;
+    } else if (line.startsWith('Topic:')) {
+      scriptHtml += `<div style="font-weight:600;margin-bottom:10px;color:var(--audio-accent)">${line}</div>`;
+    } else {
+      scriptHtml += `<div style="margin-bottom:6px">${line}</div>`;
+    }
+  });
+  return `<div class="audio-box">
+    <div class="audio-label"><span class="headphones">\uD83C\uDFA7</span> Audio Script (what the student hears)</div>
+    <div class="stage-direction">${audio.direction}</div>
+    ${scriptHtml}
+  </div>`;
+}
+
+function renderTask(idx) {
+  const task = ITEMS[idx];
+  activeTaskIdx = idx;
+  renderSidebar();
+
+  let html = `
+    <div class="task-header">
+      <div class="task-type-badge">Stage ${task.stage} &bull; Task ${task.taskCode} &nbsp;&mdash;&nbsp; ${task.timing}</div>
+      <h2>${task.taskName}</h2>
+      <div class="q-matrix">Q-matrix: ${task.qMatrix} &nbsp;&bull;&nbsp; ${task.attributes}</div>
+      <div class="description">${task.description}</div>
+    </div>`;
+
+  task.items.forEach((item, iIdx) => {
+    const diffClass = item.difficulty;
+    const cardId = `card-${idx}-${iIdx}`;
+    html += `<div class="item-card" id="${cardId}">
+      <div class="item-label">${item.label}<span class="difficulty ${diffClass}">${item.difficulty}</span></div>`;
+
+    html += renderAudioBox(item.audio);
+
+    if (item.type === 'matching') {
+      html += `<div class="question-text">${item.question}</div>
+        <div class="matching-area">`;
+      item.speakers.forEach((sp, sIdx) => {
+        html += `<div class="matching-row">
+          <span class="speaker-tag">${sp}</span>
+          <select class="matching-select" id="match-${idx}-${iIdx}-${sIdx}">
+            <option value="">Select attitude...</option>`;
+        item.matchOptions.forEach((opt, oIdx) => {
+          html += `<option value="${oIdx}">${opt}</option>`;
+        });
+        html += `</select></div>`;
+      });
+      html += `<div class="matching-options-list" style="margin-top:8px;font-size:12px;color:var(--grey)">
+        <em>Distractors D and E are not used \u2014 3 correct matches from 5 options.</em>
+      </div></div>
+      <button class="reveal-btn" id="reveal-${idx}-${iIdx}" onclick="revealMatching(${idx},${iIdx})">Show Answer</button>
+      <div class="explanation" id="exp-${idx}-${iIdx}">
+        <div class="exp-label">Diagnostic Notes</div>${item.explanation}
+      </div>`;
+    } else {
+      html += `<div class="question-text">${item.question}</div><div class="options-list">`;
+      const letters = ['A', 'B', 'C', 'D'];
+      item.options.forEach((opt, oIdx) => {
+        html += `<div class="option-item" id="opt-${idx}-${iIdx}-${oIdx}" onclick="selectOption(${idx},${iIdx},${oIdx})">
+          <span class="option-letter">${letters[oIdx]}.</span><span>${opt}</span></div>`;
+      });
+      html += `</div>
+        <button class="reveal-btn" id="reveal-${idx}-${iIdx}" onclick="revealAnswer(${idx},${iIdx})">Show Answer</button>
+        <div class="explanation" id="exp-${idx}-${iIdx}">
+          <div class="exp-label">Diagnostic Notes</div>${item.explanation}
+        </div>`;
+    }
+    html += '</div>';
+  });
+
+  html += '<div style="display:flex;justify-content:space-between;margin-top:20px;">';
+  if (idx > 0) {
+    html += `<button class="reveal-btn" style="background:#555" onclick="selectTask(${idx-1})">&larr; Previous: ${ITEMS[idx-1].taskName}</button>`;
+  } else { html += '<div></div>'; }
+  if (idx < ITEMS.length - 1) {
+    html += `<button class="reveal-btn" onclick="selectTask(${idx+1})">Next: ${ITEMS[idx+1].taskName} &rarr;</button>`;
+  }
+  html += '</div>';
+  main.innerHTML = html;
+  window.scrollTo(0, 0);
+}
+
+function selectTask(idx) { renderTask(idx); }
+
+function selectOption(taskIdx, itemIdx, optIdx) {
+  const el = document.getElementById(`opt-${taskIdx}-${itemIdx}-${optIdx}`);
+  if (el.classList.contains('revealed')) return;
+  for (let i = 0; i < 4; i++) {
+    document.getElementById(`opt-${taskIdx}-${itemIdx}-${i}`).classList.remove('selected');
+  }
+  el.classList.add('selected');
+}
+
+function revealAnswer(taskIdx, itemIdx) {
+  const item = ITEMS[taskIdx].items[itemIdx];
+  for (let i = 0; i < item.options.length; i++) {
+    const el = document.getElementById(`opt-${taskIdx}-${itemIdx}-${i}`);
+    el.classList.add('revealed');
+    if (i === item.correct) el.classList.add('correct');
+    else if (el.classList.contains('selected')) el.classList.add('incorrect');
+    else el.classList.add('neutral');
+  }
+  document.getElementById(`exp-${taskIdx}-${itemIdx}`).classList.add('visible');
+  const btn = document.getElementById(`reveal-${taskIdx}-${itemIdx}`);
+  btn.disabled = true; btn.textContent = 'Answer Revealed';
+}
+
+function revealMatching(taskIdx, itemIdx) {
+  const item = ITEMS[taskIdx].items[itemIdx];
+  item.speakers.forEach((sp, sIdx) => {
+    const sel = document.getElementById(`match-${taskIdx}-${itemIdx}-${sIdx}`);
+    const userVal = parseInt(sel.value);
+    const correctVal = item.correctMatches[sIdx];
+    sel.disabled = true;
+    if (userVal === correctVal) {
+      sel.classList.add('correct-match');
+    } else {
+      sel.classList.add('incorrect-match');
+      sel.value = correctVal;
+      setTimeout(() => { sel.classList.remove('incorrect-match'); sel.classList.add('correct-match'); }, 1200);
+    }
+  });
+  document.getElementById(`exp-${taskIdx}-${itemIdx}`).classList.add('visible');
+  const btn = document.getElementById(`reveal-${taskIdx}-${itemIdx}`);
+  btn.disabled = true; btn.textContent = 'Answer Revealed';
+}
+
+renderTask(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnostiq Writing Assessment — Task Browser</title>
+<style>
+  :root {
+    --teal: #0D7377;
+    --teal-light: #E8F5F5;
+    --teal-dark: #095456;
+    --dark: #1A1A2E;
+    --grey: #555555;
+    --light-grey: #F5F5F5;
+    --border: #E0E0E0;
+    --correct: #2E7D32;
+    --correct-bg: #E8F5E9;
+    --info-bg: #FFF8E1;
+    --write-bg: #E3F2FD;
+    --write-accent: #1565C0;
+    --msg-bg: #E8F5E9;
+    --msg-accent: #2E7D32;
+    --email-bg: #FFF3E0;
+    --email-accent: #E65100;
+    --zpd-bg: #F3E5F5;
+    --zpd-accent: #7B1FA2;
+    --audio-bg: #EDE7F6;
+    --audio-accent: #5E35B1;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--light-grey); color: var(--dark); line-height: 1.6; }
+
+  .header { background: var(--teal); color: white; padding: 24px 32px; display: flex; align-items: center; gap: 16px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+  .header h1 { font-size: 22px; font-weight: 700; }
+  .header .subtitle { font-size: 13px; opacity: 0.85; margin-top: 2px; }
+  .header .badge { background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-left: auto; white-space: nowrap; }
+
+  .container { display: flex; min-height: calc(100vh - 80px); }
+  .sidebar { width: 280px; min-width: 280px; background: white; border-right: 1px solid var(--border); overflow-y: auto; position: sticky; top: 80px; height: calc(100vh - 80px); }
+  .sidebar-section { padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .sidebar-section:last-child { border-bottom: none; }
+  .stage-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--teal); padding: 8px 20px 4px; }
+  .stage-label .stage-time { font-weight: 400; color: var(--grey); text-transform: none; letter-spacing: 0; }
+  .nav-item { display: flex; align-items: center; padding: 10px 20px; cursor: pointer; font-size: 13px; color: var(--dark); transition: all 0.15s; gap: 10px; border-left: 3px solid transparent; }
+  .nav-item:hover { background: var(--teal-light); }
+  .nav-item.active { background: var(--teal-light); border-left-color: var(--teal); font-weight: 600; }
+  .nav-item .task-code { background: var(--teal); color: white; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; min-width: 32px; text-align: center; }
+
+  .main { flex: 1; padding: 32px 40px; max-width: 900px; }
+  .task-header { margin-bottom: 24px; }
+  .task-header .task-type-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--teal); color: white; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 700; margin-bottom: 12px; }
+  .task-header h2 { font-size: 24px; font-weight: 700; color: var(--dark); margin-bottom: 4px; }
+  .task-header .q-matrix { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 13px; color: var(--teal); margin-bottom: 8px; }
+  .task-header .description { font-size: 14px; color: var(--grey); line-height: 1.5; }
+
+  .item-card { background: white; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); margin-bottom: 24px; overflow: hidden; border: 1px solid var(--border); }
+  .item-card .item-label { background: var(--light-grey); padding: 10px 20px; font-size: 12px; font-weight: 700; color: var(--grey); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+  .difficulty { margin-left: auto; font-size: 11px; font-weight: 500; text-transform: none; letter-spacing: 0; padding: 2px 8px; border-radius: 10px; }
+  .difficulty.easy { background: #E8F5E9; color: #2E7D32; }
+  .difficulty.moderate { background: #FFF3E0; color: #E65100; }
+  .difficulty.hard { background: #FFEBEE; color: #C62828; }
+  .card-body { padding: 20px; }
+
+  /* AUDIO BOX */
+  .audio-box { background: var(--audio-bg); border: 1px solid #D1C4E9; border-radius: 8px; padding: 14px 18px; margin-bottom: 14px; }
+  .audio-box .audio-label { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--audio-accent); margin-bottom: 8px; }
+  .audio-box .audio-text { font-size: 15px; font-weight: 500; }
+  .audio-box .audio-meta { font-size: 11px; color: var(--grey); font-style: italic; margin-top: 6px; }
+
+  /* TYPING BOX */
+  .typing-box { background: white; border: 2px solid var(--border); border-radius: 8px; padding: 14px 18px; margin-bottom: 14px; }
+  .typing-box .typing-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--write-accent); margin-bottom: 8px; }
+  .typing-input { width: 100%; padding: 12px 14px; border: 2px dashed var(--border); border-radius: 6px; font-size: 15px; color: var(--grey); font-style: italic; background: #FAFBFC; min-height: 44px; }
+  .typing-input.large { min-height: 120px; }
+
+  /* PROMPT BOX */
+  .prompt-box { background: var(--write-bg); border: 1px solid #BBDEFB; border-radius: 8px; padding: 16px 20px; margin-bottom: 14px; }
+  .prompt-box .prompt-label { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--write-accent); margin-bottom: 10px; }
+  .prompt-box .prompt-text { font-size: 14px; line-height: 1.6; }
+  .prompt-box .prompt-meta { margin-top: 8px; font-size: 11px; color: var(--grey); font-style: italic; }
+
+  /* PICTURE CUE */
+  .picture-cue { background: #E8EAF6; padding: 16px; border-radius: 8px; text-align: center; margin-bottom: 14px; }
+  .picture-cue .icon { font-size: 40px; }
+  .picture-cue .desc { font-size: 12px; color: var(--grey); margin-top: 6px; }
+
+  /* MESSAGING INTERFACE */
+  .msg-interface { background: #F5F5F5; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 14px; }
+  .msg-header { background: var(--msg-accent); color: white; padding: 10px 16px; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  .msg-body { padding: 16px; }
+  .msg-bubble { max-width: 80%; padding: 10px 14px; border-radius: 16px; margin-bottom: 10px; font-size: 14px; line-height: 1.5; }
+  .msg-bubble.incoming { background: white; border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+  .msg-bubble.outgoing { background: var(--msg-bg); margin-left: auto; border-bottom-right-radius: 4px; }
+  .msg-bubble .sender { font-size: 11px; font-weight: 700; color: var(--grey); margin-bottom: 4px; }
+  .msg-compose { border-top: 1px solid var(--border); padding: 12px 16px; background: white; display: flex; align-items: center; gap: 10px; }
+  .msg-compose .input-sim { flex: 1; padding: 10px 14px; background: #FAFBFC; border: 2px dashed var(--border); border-radius: 20px; font-size: 13px; color: var(--grey); font-style: italic; }
+
+  /* EMAIL INTERFACE */
+  .email-interface { background: white; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 14px; }
+  .email-header { background: var(--email-accent); color: white; padding: 10px 16px; font-size: 13px; font-weight: 700; }
+  .email-fields { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .email-fields div { margin-bottom: 4px; }
+  .email-fields .label { font-weight: 700; color: var(--grey); display: inline-block; width: 50px; }
+  .email-body { padding: 16px; min-height: 100px; }
+  .email-reply { background: #FFF8E1; padding: 14px 16px; border-top: 1px solid var(--border); font-size: 13px; line-height: 1.6; }
+  .email-reply .reply-label { font-size: 11px; font-weight: 700; color: var(--email-accent); margin-bottom: 6px; text-transform: uppercase; }
+
+  /* SCORING BOX */
+  .scoring-box { background: var(--correct-bg); border: 1px solid #C8E6C9; border-radius: 8px; padding: 14px 18px; margin-bottom: 14px; }
+  .scoring-box .scoring-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--correct); margin-bottom: 8px; }
+  .scoring-box .scoring-text { font-size: 13px; line-height: 1.5; }
+  .criteria-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .criteria-tag { background: white; border: 1px solid #A5D6A7; padding: 3px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; color: var(--correct); }
+
+  /* ZPD BOX */
+  .zpd-box { background: var(--zpd-bg); border: 1px solid #CE93D8; border-radius: 8px; padding: 14px 18px; margin-bottom: 14px; }
+  .zpd-box .zpd-label { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--zpd-accent); margin-bottom: 10px; }
+  .zpd-box .zpd-text { font-size: 13px; line-height: 1.6; }
+
+  /* FOLLOW-UP BANK */
+  .followup-bank { margin-top: 12px; }
+  .followup-item { padding: 10px 14px; background: white; border-radius: 6px; border-left: 3px solid var(--zpd-accent); margin-bottom: 8px; }
+  .followup-item .fu-trigger { font-size: 11px; font-weight: 700; color: var(--zpd-accent); margin-bottom: 4px; }
+  .followup-item .fu-text { font-size: 13px; font-style: italic; }
+
+  /* BAND SCALE */
+  .band-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
+  .band-table th, .band-table td { padding: 8px 10px; border: 1px solid var(--border); text-align: left; }
+  .band-table th { background: var(--teal); color: white; font-size: 11px; text-transform: uppercase; }
+  .band-table tr:nth-child(even) { background: #FAFBFC; }
+  .band-table .band-num { font-weight: 700; color: var(--teal); text-align: center; width: 40px; }
+
+  .explanation { padding: 14px; background: var(--info-bg); border-radius: 8px; font-size: 13px; line-height: 1.6; }
+  .explanation .exp-label { font-weight: 700; color: #F57F17; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+
+  .exit-banner { background: #FFF3E0; border: 2px solid #FFB74D; border-radius: 8px; padding: 12px 20px; margin-bottom: 16px; font-size: 13px; display: flex; align-items: center; gap: 10px; }
+  .exit-banner .exit-icon { font-size: 20px; }
+  .exit-banner .exit-text { font-weight: 600; color: #E65100; }
+  .exit-banner .exit-detail { color: var(--grey); font-size: 12px; }
+
+  .nav-btn { display: inline-block; padding: 10px 20px; background: var(--teal); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+  .nav-btn:hover { background: var(--teal-dark); }
+  .nav-btn.secondary { background: #555; }
+
+  @media (max-width: 900px) { .sidebar { display: none; } .main { padding: 20px; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>Diagnostiq Writing Assessment</h1>
+    <div class="subtitle">Task Browser &mdash; IDWA v3.0</div>
+  </div>
+  <div class="badge">Secondary &bull; Years 7&ndash;12</div>
+</div>
+
+<div class="container">
+  <div class="sidebar" id="sidebar"></div>
+  <div class="main" id="main"></div>
+</div>
+
+<script>
+const TASKS = [
+  // ===== STAGE 1 =====
+  {
+    stage: 1, taskCode: "W1A", taskName: "Write from Dictation",
+    attributes: "A1: Orthographic Encoding", qMatrix: "[1,0,0,0,0,0]",
+    description: "Student hears a word and types it. Tests whether the student can map a heard word to its written form \u2014 the foundational encoding operation. The productive counterpart of the CDRA's Word Recognition task.",
+    timing: "~10\u201315 sec/item \u2022 3\u20134 items",
+    samples: [
+      {
+        label: "Easy Item", difficulty: "easy",
+        audio: { text: '"beautiful"', meta: "Clear Australian English, natural pace, repeated once after 2-second pause" },
+        instruction: "Type the word you hear.",
+        scoring: "Correctly spelled = 1, otherwise = 0. Minor capitalisation tolerated.",
+        explanation: "Tests orthographic encoding of a common but irregular word. 'Beautiful' is high-frequency but has the -eau- digraph that many L2 writers struggle with. Common errors: 'beatiful,' 'beutiful,' 'beautifull.' Each error pattern reveals a different encoding breakdown."
+      },
+      {
+        label: "Hard Item", difficulty: "hard",
+        audio: { text: '"government"', meta: "Polysyllabic, unstressed middle syllable often reduced in speech" },
+        instruction: "Type the word you hear.",
+        scoring: "Correctly spelled = 1, otherwise = 0.",
+        explanation: "High-frequency academic word with a silent/reduced syllable (-ern- often pronounced /\u0259n/). Common L2 errors: 'goverment' (most common), 'goverment,' 'gouvernment.' This is the same word tested in the reading orthographic choice task, enabling cross-skill comparison."
+      }
+    ]
+  },
+  {
+    stage: 1, taskCode: "W1B", taskName: "Sentence Dictation",
+    attributes: "A1: Orthographic Encoding", qMatrix: "[1,0,0,0,0,0]",
+    description: "Student hears a short sentence (6\u201312 words) and types it. Tests encoding in context: the student must hold a heard sentence in working memory and produce a written version including spacing and basic punctuation.",
+    timing: "~20\u201330 sec/item \u2022 2\u20133 items",
+    exitAfter: { label: "Exit A", profile: "Profile 1: [0,0,0,0,0,0]", phase: "Beginning", time: "~6\u20138 min", desc: "Cannot produce basic written English forms. Focus: letter\u2013sound relationships, high-frequency word spelling." },
+    samples: [
+      {
+        label: "Easy Item", difficulty: "easy",
+        audio: { text: '"The dog is sleeping on the bed."', meta: "6 words, simple syntax, regular vocabulary" },
+        instruction: "Type the sentence you hear.",
+        scoring: "All content words correctly spelled = 1. Function word errors tolerated if meaning preserved.",
+        explanation: "Short sentence with regular spellings and simple SVO structure. Tests the most basic sentence-level encoding: word boundaries, spacing, and common word spelling."
+      },
+      {
+        label: "Hard Item", difficulty: "hard",
+        audio: { text: '"She couldn\u2019t remember whether the appointment was on Wednesday or Thursday."', meta: "12 words, irregular spellings, connected speech reductions" },
+        instruction: "Type the sentence you hear.",
+        scoring: "All content words correctly spelled = 1.",
+        explanation: "Multiple challenge words: 'couldn\u2019t' (contraction), 'remember' (double letters), 'whether' (wh-), 'appointment' (double p), 'Wednesday' (silent d), 'Thursday' (th- cluster). Tests encoding under working memory load with irregular words."
+      }
+    ]
+  },
+  {
+    stage: 1, taskCode: "W2A", taskName: "Productive Gap-Fill",
+    attributes: "A2: Productive Vocabulary", qMatrix: "[1,1,0,0,0,0]",
+    description: "Student sees a sentence with a gap + picture or definition cue, and types the missing word. Tests productive vocabulary knowledge \u2014 the student must access the correct word and encode it.",
+    timing: "~15\u201320 sec/item \u2022 3\u20134 items",
+    exitAfter: { label: "Exit B", profile: "Profile 2: [1,0,0,0,0,0]", phase: "Beginning\u2013Emerging", time: "~6\u20138 min", desc: "Can encode words but cannot deploy productive vocabulary. Focus: vocabulary building and sentence-level grammar." },
+    samples: [
+      {
+        label: "Easy: Picture Cue", difficulty: "easy",
+        picture: { icon: "\uD83D\uDD2C", desc: "Clear photograph of a microscope" },
+        sentence: 'The student is using a __________ to look at the cells.',
+        instruction: "Type the missing word.",
+        scoring: "Correct word (or accepted synonym) correctly spelled = 1. Phonetically plausible misspelling accepted if meaning clear.",
+        explanation: "High-frequency concrete noun with an unambiguous picture cue. Tests whether the student can access and encode a word from their productive lexicon. A student who types 'miskroscope' demonstrates vocabulary knowledge (A2) despite an encoding weakness (A1 already assessed)."
+      },
+      {
+        label: "Hard: Definition Cue", difficulty: "hard",
+        sentence: 'The scientist wanted to __________ the results. (= check whether they were correct)',
+        instruction: "Type the missing word.",
+        scoring: "Correct word ('verify,' 'check,' 'confirm') = 1. Synonyms pre-specified in answer key.",
+        explanation: "Tier 2 academic vocabulary with a definition cue. The target is 'verify' but 'check' and 'confirm' are accepted. Tests productive access to academic vocabulary \u2014 the student must go from meaning to word form, not word form to meaning (which is the reading direction)."
+      }
+    ]
+  },
+  {
+    stage: 1, taskCode: "W2B", taskName: "Sentence Construction",
+    attributes: "A3: Sentence Control", qMatrix: "[1,1,1,0,0,0]",
+    description: "Student produces or corrects a sentence from given elements. Two formats: (A) put scrambled words in order, or (B) fix an underlined grammatical error. Tests sentence-level grammar.",
+    timing: "~20\u201330 sec/item \u2022 2\u20133 items",
+    samples: [
+      {
+        label: "Format A: Word Scramble (Easy)", difficulty: "easy",
+        format: "scramble",
+        words: ["the", "went", "shop", "to", "boy", "the"],
+        target: "The boy went to the shop.",
+        instruction: "Put these words in order to make a correct sentence.",
+        scoring: "Grammatically correct target sentence = 1.",
+        explanation: "Simple SVO + prepositional phrase. Only one correct arrangement. Tests basic English word order, which many L1s handle differently (SOV in Hindi, Korean, Japanese; VSO in Arabic, Irish)."
+      },
+      {
+        label: "Format A: Word Scramble (Hard)", difficulty: "hard",
+        format: "scramble",
+        words: ["the", "students", "were", "told", "that", "the", "excursion", "had", "been", "cancelled"],
+        target: "The students were told that the excursion had been cancelled.",
+        instruction: "Put these words in order to make a correct sentence.",
+        scoring: "Grammatically correct sentence = 1.",
+        explanation: "Complex sentence with passive voice ('were told'), reported speech ('that'), and past perfect passive ('had been cancelled'). Tests whether the student can manage multi-clause structures that are common in classroom instructions."
+      },
+      {
+        label: "Format B: Error Correction", difficulty: "moderate",
+        format: "error",
+        sentence: 'The teacher <u>give</u> us homework every day.',
+        target: "The teacher gives us homework every day.",
+        instruction: "Fix the underlined error and type the correct sentence.",
+        scoring: "Error correctly fixed = 1.",
+        explanation: "Subject-verb agreement error (teacher + give \u2192 gives). This is one of the most persistent EAL/D errors, especially for speakers of L1s without overt agreement marking (Mandarin, Vietnamese, many others). The error is unambiguous \u2014 only one fix is possible."
+      }
+    ]
+  },
+
+  // ===== STAGE 2 =====
+  {
+    stage: 2, taskCode: "T1", taskName: "Messaging Exchange",
+    attributes: "A4: Organisation \u2022 A5: Communicative Adequacy", qMatrix: "[1,1,1,1,1,0]",
+    description: "Two-stage interactive writing in a messaging app simulation. Informal register with a peer. Stage 1: independent writing (5 min). Stage 2: targeted follow-up based on weakest criterion (3 min). The follow-up sounds like a real friend's reply, not a correction.",
+    timing: "~10 min total",
+    isInteractive: true,
+    samples: [
+      {
+        label: "Sample: Birthday Invitation (Years 7\u20139)",
+        scenario: 'Your friend Kai has sent you a message. Read the message and reply.',
+        incoming: {
+          sender: "Kai",
+          text: "Hey! So my birthday is next Saturday and I\u2019m having a few people over at my place from 3pm. You should come! Also can you ask Priya if she\u2019s free? I don\u2019t have her number."
+        },
+        contentPoints: [
+          "Respond to the invitation (accept/decline/maybe)",
+          "Address the request about Priya",
+          "Ask or confirm at least one logistical detail"
+        ],
+        followups: [
+          { trigger: "If C1 (Task Fulfilment) weak", text: "Ok but are you actually coming though? And what time works for you?" },
+          { trigger: "If C3 (Organisation) weak", text: "Wait I\u2019m confused \u2014 do you mean before or after the game?" },
+          { trigger: "If C4 (Sentence Control) weak", text: "So you\u2019re saying you CAN\u2019T come Saturday but you\u2019re free Sunday?" },
+          { trigger: "If C6 (Spelling) weak", text: "What do you mean by [unclear word]? Couldn\u2019t read that bit" },
+          { trigger: "Default (all adequate)", text: "That sounds great! Oh also \u2014 do you reckon we should get a present together? What\u2019s Kai into?" }
+        ],
+        scoring: "Scored on all 6 criteria (C1\u2013C6) on Bands 1\u20135. Informal register expected \u2014 abbreviations, emoji-style language acceptable if meaning clear.",
+        explanation: "The messaging format creates an authentic communicative need. The follow-up is selected by the system based on the student\u2019s weakest criterion \u2014 it sounds like a natural reply from Kai, not a correction. The comparison between Stage 1 (independent) and Stage 2 (after follow-up) performance reveals the student\u2019s ZPD."
+      }
+    ]
+  },
+  {
+    stage: 2, taskCode: "T2", taskName: "Email Exchange",
+    attributes: "A4: Organisation \u2022 A5: Communicative Adequacy \u2022 A6: Rhetorical Effectiveness", qMatrix: "[1,1,1,1,1,1]",
+    description: "Two-stage interactive writing in an email client simulation. Semi-formal to formal register. The recipient\u2019s reply is written in the target register, implicitly modelling expected formality. Stage 3 extension: the most challenging follow-ups probe A6 through argumentative/evaluative elaboration.",
+    timing: "~10\u201315 min total",
+    isInteractive: true,
+    samples: [
+      {
+        label: "Sample: Work Experience Thank-You (Years 10\u201312)",
+        scenario: 'You completed a one-week work experience placement at a local veterinary clinic. The clinic manager, Dr Nguyen, supervised you. Write an email to Dr Nguyen thanking her for the experience and asking if there are any volunteer opportunities during the school holidays.',
+        emailTo: "Dr Nguyen",
+        emailSubject: "Thank you \u2014 Work Experience",
+        contentPoints: [
+          "Thank Dr Nguyen",
+          "Mention something specific you learned",
+          "Ask about volunteer opportunities",
+          "Provide your availability",
+          "Close appropriately"
+        ],
+        followups: [
+          { trigger: "If C1 (Task Fulfilment) weak", text: "Thank you for your email. Could you also let me know when you would be available and what days work best?" },
+          { trigger: "If C2 (Idea Development) weak", text: "Thanks for reaching out. Could you tell me a bit more about what aspects of the placement you found most valuable? That helps us know where to place volunteers." },
+          { trigger: "If C3 (Organisation) weak", text: "Thank you for your interest. It would help if you could set out what you\u2019re looking for and when in a bit more detail." },
+          { trigger: "If C5 (Vocabulary/Register) weak", text: "Thanks for your email. We do have some opportunities \u2014 I\u2019ll ask our volunteer coordinator to send you the details. Could you confirm your availability?" },
+          { trigger: "Default / A6 probe (Stage 3)", text: "We actually have two options: assisting in consultations (mostly observing) or helping in the kennel area (more hands-on but less clinical). Which would you prefer and why?" }
+        ],
+        scoring: "Scored on all 6 criteria (C1\u2013C6). Formal register expected. C2 (Idea Development) and C5 (Vocabulary Range) particularly diagnostic at this level.",
+        explanation: "The email format tests formal register control \u2014 the gap between how a student texts a friend and how they write to a professional. Dr Nguyen\u2019s reply models the expected register. The Stage 3 extension follow-up (\u2018which would you prefer and why?\u2019) probes A6 by requiring the student to evaluate, take a stance, and justify a choice."
+      }
+    ]
+  },
+
+  // ===== SCORING =====
+  {
+    stage: 0, taskCode: "C1\u2013C6", taskName: "Scoring Criteria & Band Scale",
+    attributes: "All attributes", qMatrix: "Stage 2 criteria \u2192 A4\u2013A6",
+    description: "Stage 2 writing samples are scored on six analytic criteria on a 1\u20135 band scale mapped to the ACARA EAL/D Learning Progression. Each criterion evaluates a specific dimension of writing quality.",
+    timing: "Rater scoring",
+    isCriteria: true,
+    criteria: [
+      { code: "C1", name: "Task Fulfilment", what: "How effectively the text addresses the prompt, purpose, and audience. Does the student respond to all parts of the task?", attr: "A5" },
+      { code: "C2", name: "Idea Development & Support", what: "How well ideas are explained, elaborated, and supported with details, examples, or evidence. Is there depth?", attr: "A6" },
+      { code: "C3", name: "Text Organisation & Cohesion", what: "How effectively the text is structured and how ideas are linked using cohesive devices. Can the reader follow?", attr: "A4" },
+      { code: "C4", name: "Sentence Control & Complexity", what: "How accurately and effectively sentences are formed and varied. Do errors impede meaning?", attr: "A3 (corroborate)" },
+      { code: "C5", name: "Vocabulary Range & Precision", what: "How appropriately words are chosen for topic, purpose, and audience. Does word choice enhance meaning?", attr: "A5 (register)" },
+      { code: "C6", name: "Spelling, Punctuation & Editing", what: "How accurately conventional spelling and punctuation are used. Evidence of proofreading?", attr: "A1 (corroborate)" }
+    ],
+    bands: [
+      { num: 5, label: "Advanced Control", phase: "Above Consolidating", desc: "Demonstrated consistently and effectively with controlled, purposeful choices." },
+      { num: 4, label: "Consolidating Control", phase: "Consolidating", desc: "Demonstrated with minor lapses that do not impede communication. Meets year-level expectations." },
+      { num: 3, label: "Developing Control", phase: "Developing", desc: "Inconsistently demonstrated. Some evidence but noticeable gaps." },
+      { num: 2, label: "Emerging Control", phase: "Emerging", desc: "Largely absent or seriously limited. Communication sometimes impeded." },
+      { num: 1, label: "Beginning Control", phase: "Beginning", desc: "Not demonstrated or demonstrated only in formulaic/copied language." }
+    ]
+  }
+];
+
+const sidebar = document.getElementById('sidebar');
+const main = document.getElementById('main');
+let activeTaskIdx = 0;
+
+function renderSidebar() {
+  let html = '';
+  const stages = [
+    { num: 1, label: 'STAGE 1: Psycholinguistic Screening', time: '~6\u20138 min' },
+    { num: 2, label: 'STAGE 2: Interactive Writing', time: '~18\u201320 min' },
+    { num: 0, label: 'SCORING FRAMEWORK', time: '' }
+  ];
+  stages.forEach(stage => {
+    const tasks = TASKS.filter(t => t.stage === stage.num);
+    if (!tasks.length) return;
+    html += `<div class="sidebar-section"><div class="stage-label">${stage.label} <span class="stage-time">${stage.time}</span></div>`;
+    tasks.forEach(task => {
+      const gi = TASKS.indexOf(task);
+      html += `<div class="nav-item ${gi === activeTaskIdx ? 'active' : ''}" onclick="selectTask(${gi})"><span class="task-code">${task.taskCode}</span><span>${task.taskName}</span></div>`;
+    });
+    html += '</div>';
+  });
+  sidebar.innerHTML = html;
+}
+
+function renderTask(idx) {
+  const task = TASKS[idx];
+  activeTaskIdx = idx;
+  renderSidebar();
+
+  let html = `<div class="task-header">
+    <div class="task-type-badge">${task.stage > 0 ? 'Stage ' + task.stage + ' \u2022 ' : ''}${task.taskCode} &mdash; ${task.timing}</div>
+    <h2>${task.taskName}</h2>
+    <div class="q-matrix">Q-matrix: ${task.qMatrix} &bull; ${task.attributes}</div>
+    <div class="description">${task.description}</div>
+  </div>`;
+
+  // CRITERIA PAGE
+  if (task.isCriteria) {
+    html += '<div class="item-card"><div class="item-label">Six Analytic Criteria</div><div class="card-body">';
+    task.criteria.forEach(c => {
+      html += `<div style="margin-bottom:14px;padding:12px;background:#FAFBFC;border-radius:8px;border-left:3px solid var(--teal)">
+        <div style="font-weight:700;color:var(--teal);font-size:14px">${c.code}: ${c.name} <span style="font-weight:400;color:var(--grey);font-size:12px">\u2192 ${c.attr}</span></div>
+        <div style="font-size:13px;margin-top:4px">${c.what}</div>
+      </div>`;
+    });
+    html += '</div></div>';
+
+    html += '<div class="item-card"><div class="item-label">Five-Band Scale</div><div class="card-body"><table class="band-table"><tr><th>Band</th><th>Label</th><th>EAL/D Phase</th><th>Descriptor</th></tr>';
+    task.bands.forEach(b => {
+      html += `<tr><td class="band-num">${b.num}</td><td style="font-weight:600">${b.label}</td><td>${b.phase}</td><td>${b.desc}</td></tr>`;
+    });
+    html += '</table><div style="margin-top:12px;font-size:12px;color:var(--grey)"><strong>Mastery threshold:</strong> Bands 4\u20135 = mastery (1), Bands 1\u20133 = non-mastery (0)</div></div></div>';
+
+    html += `<div class="item-card"><div class="item-label">ZPD Responsiveness Categories</div><div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div style="padding:12px;background:#E8F5E9;border-radius:8px"><strong style="color:#2E7D32">Consolidating</strong><br><span style="font-size:13px">Stage 1 \u2265 Band 4. Independent. Focus: enrichment.</span></div>
+        <div style="padding:12px;background:var(--zpd-bg);border-radius:8px"><strong style="color:var(--zpd-accent)">Responsive</strong><br><span style="font-size:13px">Stage 1 \u2264 Band 3, Stage 2 improves \u22651 band. In the ZPD. Priority for scaffolded practice.</span></div>
+        <div style="padding:12px;background:#FFF3E0;border-radius:8px"><strong style="color:#E65100">Developing</strong><br><span style="font-size:13px">Stage 1 = Band 3, no change. Partial evidence. Needs sustained explicit teaching.</span></div>
+        <div style="padding:12px;background:#FFEBEE;border-radius:8px"><strong style="color:#C62828">Not Yet Responsive</strong><br><span style="font-size:13px">Stage 1 \u2264 Band 2, no improvement. May need foundational work on prerequisites first.</span></div>
+      </div>
+    </div></div>`;
+  }
+
+  // INTERACTIVE TASKS (Stage 2)
+  else if (task.isInteractive) {
+    task.samples.forEach(sample => {
+      html += `<div class="item-card"><div class="item-label">${sample.label}</div><div class="card-body">`;
+
+      // Scenario
+      html += `<div class="prompt-box"><div class="prompt-label">\uD83D\uDCCB Scenario</div><div class="prompt-text">${sample.scenario}</div>
+        <div style="margin-top:10px"><strong>Content points:</strong><ul style="margin-left:20px;margin-top:4px">`;
+      sample.contentPoints.forEach(cp => { html += `<li style="font-size:13px">${cp}</li>`; });
+      html += '</ul></div></div>';
+
+      // Interface simulation
+      if (sample.incoming) {
+        // Messaging
+        html += `<div class="msg-interface">
+          <div class="msg-header">\uD83D\uDCAC Messages \u2014 ${sample.incoming.sender}</div>
+          <div class="msg-body">
+            <div class="msg-bubble incoming"><div class="sender">${sample.incoming.sender}</div>${sample.incoming.text}</div>
+            <div class="msg-bubble outgoing" style="background:#E3F2FD"><div class="sender">You (Stage 1: Independent Writing)</div><div class="typing-input">Student types their reply here... (5 min, can advance after 3 min)</div></div>
+          </div>
+          <div class="msg-compose"><div class="input-sim">\u270D\uFE0F Type your message...</div></div>
+        </div>`;
+      } else {
+        // Email
+        html += `<div class="email-interface">
+          <div class="email-header">\uD83D\uDCE7 New Email</div>
+          <div class="email-fields">
+            <div><span class="label">To:</span> ${sample.emailTo}</div>
+            <div><span class="label">Subject:</span> ${sample.emailSubject}</div>
+          </div>
+          <div class="email-body"><div class="typing-input large">Student composes email here... (5 min, can advance after 3 min)</div></div>
+        </div>`;
+      }
+
+      // ZPD mechanism
+      html += `<div class="zpd-box">
+        <div class="zpd-label">\uD83E\uDDE0 Stage 2: Targeted Follow-Up (ZPD Probe)</div>
+        <div class="zpd-text">System analyses Stage 1 response, identifies weakest criterion, and selects a follow-up from the bank below. The follow-up sounds like a natural reply, not a correction.</div>
+        <div class="followup-bank">`;
+      sample.followups.forEach(fu => {
+        html += `<div class="followup-item"><div class="fu-trigger">${fu.trigger}:</div><div class="fu-text">"${fu.text}"</div></div>`;
+      });
+      html += '</div></div>';
+
+      // Scoring
+      html += `<div class="scoring-box"><div class="scoring-label">\u2705 Scoring</div><div class="scoring-text">${sample.scoring}</div>
+        <div class="criteria-tags"><span class="criteria-tag">C1 Task Fulfilment</span><span class="criteria-tag">C2 Idea Development</span><span class="criteria-tag">C3 Organisation</span><span class="criteria-tag">C4 Sentence Control</span><span class="criteria-tag">C5 Vocabulary</span><span class="criteria-tag">C6 Spelling/Punct.</span></div></div>`;
+
+      html += `<div class="explanation"><div class="exp-label">Diagnostic Notes</div>${sample.explanation}</div>`;
+      html += '</div></div>';
+    });
+  }
+
+  // STAGE 1 TASKS
+  else {
+    task.samples.forEach(sample => {
+      html += `<div class="item-card"><div class="item-label">${sample.label} <span class="difficulty ${sample.difficulty}">${sample.difficulty}</span></div><div class="card-body">`;
+
+      if (sample.audio) {
+        html += `<div class="audio-box"><div class="audio-label">\uD83C\uDFA7 What the student hears</div><div class="audio-text">${sample.audio.text}</div><div class="audio-meta">${sample.audio.meta}</div></div>`;
+      }
+      if (sample.picture) {
+        html += `<div class="picture-cue"><div class="icon">${sample.picture.icon}</div><div class="desc">${sample.picture.desc}</div></div>`;
+      }
+      if (sample.sentence) {
+        html += `<div class="prompt-box"><div class="prompt-label">\uD83D\uDCBB On screen</div><div class="prompt-text" style="font-size:16px">${sample.sentence}</div></div>`;
+      }
+      if (sample.format === 'scramble') {
+        html += `<div class="prompt-box"><div class="prompt-label">\uD83D\uDCBB On screen</div><div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">`;
+        sample.words.forEach(w => { html += `<span style="background:white;border:1px solid var(--border);padding:6px 14px;border-radius:6px;font-size:15px;font-weight:500">${w}</span>`; });
+        html += `</div><div style="font-size:13px;color:var(--grey)">Target: <strong>${sample.target}</strong></div></div>`;
+      }
+      if (sample.format === 'error') {
+        html += `<div class="prompt-box"><div class="prompt-label">\uD83D\uDCBB On screen</div><div style="font-size:16px;margin-bottom:8px">${sample.sentence}</div><div style="font-size:13px;color:var(--grey)">Target: <strong>${sample.target}</strong></div></div>`;
+      }
+
+      html += `<div class="typing-box"><div class="typing-label">\u270D\uFE0F ${sample.instruction}</div><div class="typing-input">Student types here...</div></div>`;
+
+      html += `<div class="scoring-box"><div class="scoring-label">\u2705 Scoring</div><div class="scoring-text">${sample.scoring}</div></div>`;
+      html += `<div class="explanation"><div class="exp-label">Diagnostic Notes</div>${sample.explanation}</div>`;
+      html += '</div></div>';
+    });
+  }
+
+  // Exit banner
+  if (task.exitAfter) {
+    html += `<div class="exit-banner"><span class="exit-icon">\uD83D\uDEA8</span><div><div class="exit-text">${task.exitAfter.label} \u2014 ${task.exitAfter.profile}</div><div class="exit-detail">ACARA: ${task.exitAfter.phase} \u2022 Duration: ${task.exitAfter.time}<br>${task.exitAfter.desc}</div></div></div>`;
+  }
+
+  // Nav
+  html += '<div style="display:flex;justify-content:space-between;margin-top:20px">';
+  if (idx > 0) html += `<button class="nav-btn secondary" onclick="selectTask(${idx-1})">\u2190 ${TASKS[idx-1].taskName}</button>`;
+  else html += '<div></div>';
+  if (idx < TASKS.length - 1) html += `<button class="nav-btn" onclick="selectTask(${idx+1})">${TASKS[idx+1].taskName} \u2192</button>`;
+  html += '</div>';
+
+  main.innerHTML = html;
+  window.scrollTo(0, 0);
+}
+
+function selectTask(idx) { renderTask(idx); }
+renderTask(0);
+</script>
+</body>
+</html>
