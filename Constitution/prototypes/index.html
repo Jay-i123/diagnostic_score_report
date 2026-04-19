@@ -69,6 +69,30 @@
     white-space: nowrap;
   }
 
+  .nav-spacer { flex: 1; }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-left: auto;
+    padding-left: 24px;
+    border-left: 1px solid rgba(255,255,255,0.2);
+  }
+  .nav-link {
+    color: rgba(255,255,255,0.7);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 4px 12px;
+    border-radius: 4px;
+    transition: all 0.15s;
+  }
+  .nav-link:hover {
+    color: white;
+    background: rgba(255,255,255,0.1);
+  }
+
   .content {
     flex: 1;
     background: white;
@@ -116,6 +140,12 @@
       <span class="tab-icon">&#x270D;&#xFE0F;</span>
       <span class="tab-label">Writing</span>
     </a>
+  </div>
+
+  <div class="nav-links">
+    <a href="https://diagnostiq-deploy.vercel.app/" class="nav-link" target="_blank">Score Report</a>
+    <a href="/dashboard/" class="nav-link" target="_blank">Dashboard</a>
+    <a href="https://schoolgo-prototype.vercel.app/" class="nav-link" target="_blank">SchoolGo</a>
   </div>
 </div>
 

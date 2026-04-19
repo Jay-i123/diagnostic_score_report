@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnostiq — Psychometric Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0D0E1C;--charcoal:#191844;--teal:#6B61FA;--coral:#DF202E;
+  --amber:#ED9E2F;--success:#2DCC70;--white:#FFFFFF;--mid-gray:#9EA2C4;
+  --card-bg:rgba(255,255,255,0.06);--card-border:rgba(255,255,255,0.1);
+  --font:'DM Sans',sans-serif;--radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--navy);color:var(--white);line-height:1.6;min-height:100vh}
+
+/* ── Top Bar ── */
+.top-bar{
+  background:#0D7377;
+  height:56px;display:flex;align-items:center;
+  padding:0 32px;gap:24px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.2);
+  position:sticky;top:0;z-index:200;
+}
+.brand{display:flex;align-items:center;gap:12px;padding-right:24px;border-right:1px solid rgba(255,255,255,0.2)}
+.brand h1{color:#fff;font-size:18px;font-weight:700;letter-spacing:-0.3px}
+.brand .sub{color:rgba(255,255,255,0.7);font-size:12px}
+.nav-links{display:flex;gap:4px;margin-left:auto}
+.nav-link{
+  color:rgba(255,255,255,0.75);font-size:13px;font-weight:600;
+  text-decoration:none;padding:6px 14px;border-radius:6px;
+  transition:all 0.15s;
+}
+.nav-link:hover{background:rgba(255,255,255,0.12);color:#fff}
+.nav-link.active{background:rgba(255,255,255,0.18);color:#fff}
+
+/* ── Sub-nav (filters) ── */
+.sub-nav{
+  background:rgba(255,255,255,0.04);border-bottom:1px solid var(--card-border);
+  padding:12px 32px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+}
+.filter-group{display:flex;align-items:center;gap:8px}
+.filter-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--mid-gray)}
+.filter-select{
+  background:rgba(255,255,255,0.08);border:1px solid var(--card-border);
+  color:#fff;font-family:var(--font);font-size:13px;
+  padding:5px 12px;border-radius:8px;cursor:pointer;
+  appearance:none;outline:none;
+}
+.filter-select option{background:#1a1b2e}
+.cohort-badge{
+  margin-left:auto;background:rgba(107,97,250,0.15);border:1px solid rgba(107,97,250,0.3);
+  color:var(--teal);padding:4px 14px;border-radius:20px;font-size:12px;font-weight:600;
+}
+
+/* ── Layout ── */
+.container{max-width:1400px;margin:0 auto;padding:32px}
+.page-title{font-size:28px;font-weight:700;margin-bottom:4px}
+.page-sub{color:var(--mid-gray);font-size:14px;margin-bottom:32px}
+
+/* ── Summary KPI Row ── */
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:32px}
+@media(max-width:1100px){.kpi-row{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:700px){.kpi-row{grid-template-columns:repeat(2,1fr)}}
+.kpi-card{
+  background:var(--card-bg);border:1px solid var(--card-border);
+  border-radius:var(--radius-sm);padding:20px 24px;
+}
+.kpi-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--mid-gray);margin-bottom:8px}
+.kpi-value{font-size:32px;font-weight:700;line-height:1}
+.kpi-sub{font-size:12px;color:var(--mid-gray);margin-top:6px}
+.kpi-value.green{color:var(--success)}
+.kpi-value.amber{color:var(--amber)}
+.kpi-value.teal{color:var(--teal)}
+
+/* ── Grid layouts ── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;margin-bottom:24px}
+@media(max-width:1000px){.grid-2,.grid-3{grid-template-columns:1fr}}
+
+/* ── Cards ── */
+.card{
+  background:var(--card-bg);border:1px solid var(--card-border);
+  border-radius:var(--radius);padding:28px;
+}
+.card-title{font-size:16px;font-weight:600;margin-bottom:4px}
+.card-sub{font-size:12px;color:var(--mid-gray);margin-bottom:20px}
+.chart-wrap{position:relative;height:280px}
+.chart-wrap-sm{position:relative;height:200px}
+.chart-wrap-lg{position:relative;height:360px}
+
+/* ── Skill tabs ── */
+.skill-tabs{display:flex;gap:4px;margin-bottom:20px;background:rgba(255,255,255,0.05);border-radius:10px;padding:4px;width:fit-content}
+.skill-tab{
+  padding:6px 18px;border-radius:7px;border:none;cursor:pointer;
+  font-family:var(--font);font-size:13px;font-weight:500;
+  background:transparent;color:var(--mid-gray);transition:all 0.2s;
+}
+.skill-tab.active{background:var(--teal);color:#fff;font-weight:600}
+
+/* ── Item table ── */
+.item-table{width:100%;border-collapse:collapse;font-size:13px}
+.item-table th{
+  padding:10px 12px;text-align:left;font-size:11px;font-weight:600;
+  text-transform:uppercase;letter-spacing:0.5px;color:var(--mid-gray);
+  border-bottom:1px solid var(--card-border);
+}
+.item-table td{
+  padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.04);
+}
+.item-table tbody tr:hover{background:rgba(255,255,255,0.03)}
+.badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.badge.good{background:rgba(45,204,112,0.15);color:var(--success)}
+.badge.warn{background:rgba(237,158,47,0.15);color:var(--amber)}
+.badge.flag{background:rgba(223,32,46,0.15);color:var(--coral)}
+.icc-bar{height:6px;border-radius:3px;background:rgba(255,255,255,0.08)}
+.icc-fill{height:100%;border-radius:3px}
+
+/* ── DIF section ── */
+.dif-legend{display:flex;gap:16px;margin-bottom:12px;flex-wrap:wrap}
+.dif-leg-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mid-gray)}
+.dif-swatch{width:10px;height:10px;border-radius:50%}
+
+/* ── Reliability panel ── */
+.rel-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.rel-grid{grid-template-columns:1fr}}
+.rel-item{background:rgba(255,255,255,0.04);border-radius:10px;padding:16px 20px}
+.rel-item .rel-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--mid-gray);margin-bottom:6px}
+.rel-item .rel-value{font-size:24px;font-weight:700}
+.rel-item .rel-note{font-size:11px;color:var(--mid-gray);margin-top:4px}
+
+/* ── Score Distribution ── */
+.dist-tabs{display:flex;gap:4px;margin-bottom:16px;flex-wrap:wrap}
+.dist-tab{
+  padding:5px 14px;border-radius:20px;border:1px solid var(--card-border);
+  background:transparent;color:var(--mid-gray);font-family:var(--font);
+  font-size:12px;font-weight:600;cursor:pointer;transition:all 0.15s;
+}
+.dist-tab.active{background:rgba(107,97,250,0.2);border-color:var(--teal);color:var(--teal)}
+
+/* ── Section header ── */
+.section-header{margin:40px 0 20px}
+.section-header h2{font-size:22px;font-weight:700;margin-bottom:4px}
+.section-header p{font-size:13px;color:var(--mid-gray)}
+
+/* ── Scrollable table wrapper ── */
+.table-scroll{overflow-x:auto}
+
+/* ── Flag indicator ── */
+.flag-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:middle}
+.flag-dot.red{background:var(--coral)}
+.flag-dot.green{background:var(--success)}
+.flag-dot.amber{background:var(--amber)}
+</style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<div class="top-bar">
+  <div class="brand">
+    <div>
+      <h1>diagnostiq</h1>
+      <div class="sub">Psychometric Dashboard</div>
+    </div>
+  </div>
+  <div class="nav-links">
+    <a href="/prototypes/" class="nav-link">Item Types</a>
+    <a href="https://diagnostiq-deploy.vercel.app/" class="nav-link">Score Report</a>
+    <a href="/dashboard/" class="nav-link active">Dashboard</a>
+    <a href="https://schoolgo-prototype.vercel.app/" class="nav-link">SchoolGo</a>
+  </div>
+</div>
+
+<!-- Sub-nav -->
+<div class="sub-nav">
+  <div class="filter-group">
+    <span class="filter-label">Cohort</span>
+    <select class="filter-select" onchange="updateDashboard()">
+      <option>All Schools (N=847)</option>
+      <option>Government (N=412)</option>
+      <option>Catholic (N=231)</option>
+      <option>Independent (N=204)</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <span class="filter-label">Year Level</span>
+    <select class="filter-select">
+      <option>All Years</option>
+      <option>Year 7</option>
+      <option>Year 8</option>
+      <option>Year 9</option>
+      <option>Year 10</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <span class="filter-label">Test Form</span>
+    <select class="filter-select">
+      <option>Form A (Placement)</option>
+      <option>Form B (Progress)</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <span class="filter-label">Period</span>
+    <select class="filter-select">
+      <option>Term 1 2026</option>
+      <option>Term 4 2025</option>
+      <option>Term 3 2025</option>
+    </select>
+  </div>
+  <span class="cohort-badge">847 students · 38 items</span>
+</div>
+
+<div class="container">
+  <div class="page-title">Psychometric Dashboard</div>
+  <div class="page-sub">Item-level and cohort analysis · Form A · Term 1 2026</div>
+
+  <!-- KPI Row -->
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-label">Cronbach's α</div>
+      <div class="kpi-value green">0.91</div>
+      <div class="kpi-sub">Excellent reliability</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">SEM</div>
+      <div class="kpi-value teal">2.4</div>
+      <div class="kpi-sub">Score units</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Mean P-value</div>
+      <div class="kpi-value amber">0.58</div>
+      <div class="kpi-sub">Item difficulty</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Flagged Items</div>
+      <div class="kpi-value" style="color:var(--coral)">3</div>
+      <div class="kpi-sub">Require review</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">DIF Items</div>
+      <div class="kpi-value amber">2</div>
+      <div class="kpi-sub">Potential bias</div>
+    </div>
+  </div>
+
+  <!-- Score Distributions -->
+  <div class="section-header">
+    <h2>Score Distributions</h2>
+    <p>Stanine and raw score distribution across the cohort by macro-skill</p>
+  </div>
+
+  <div class="card" style="margin-bottom:24px">
+    <div class="dist-tabs" id="distTabs">
+      <button class="dist-tab active" onclick="switchDist(this,'overall')">Overall</button>
+      <button class="dist-tab" onclick="switchDist(this,'reading')">Reading</button>
+      <button class="dist-tab" onclick="switchDist(this,'listening')">Listening</button>
+      <button class="dist-tab" onclick="switchDist(this,'speaking')">Speaking</button>
+      <button class="dist-tab" onclick="switchDist(this,'writing')">Writing</button>
+    </div>
+    <div class="chart-wrap-lg">
+      <canvas id="distChart"></canvas>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Stanine Breakdown</div>
+      <div class="card-sub">Percentage of students per stanine band</div>
+      <div class="chart-wrap">
+        <canvas id="stanineChart"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Skill Correlation Matrix</div>
+      <div class="card-sub">Inter-skill Pearson r</div>
+      <div class="chart-wrap">
+        <canvas id="correlChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Item Analysis -->
+  <div class="section-header">
+    <h2>Item Analysis</h2>
+    <p>Difficulty (p-value), discrimination (point-biserial r), and distractor analysis</p>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:24px">
+    <div class="card">
+      <div class="card-title">Item Difficulty Distribution</div>
+      <div class="card-sub">p-value frequency across all items</div>
+      <div class="chart-wrap">
+        <canvas id="difficultyChart"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Difficulty vs Discrimination</div>
+      <div class="card-sub">p-value × point-biserial r scatter</div>
+      <div class="chart-wrap">
+        <canvas id="scatterChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Item Table -->
+  <div class="card" style="margin-bottom:24px">
+    <div class="card-title">Item Statistics by Skill</div>
+    <div class="card-sub">Full item-level metrics · Flag threshold: p &lt; 0.20 or r &lt; 0.20</div>
+    <div class="skill-tabs" id="itemTabs">
+      <button class="skill-tab active" onclick="switchItemTab(this,'reading')">📖 Reading</button>
+      <button class="skill-tab" onclick="switchItemTab(this,'listening')">🎧 Listening</button>
+      <button class="skill-tab" onclick="switchItemTab(this,'speaking')">🎙️ Speaking</button>
+      <button class="skill-tab" onclick="switchItemTab(this,'writing')">✍️ Writing</button>
+    </div>
+    <div class="table-scroll">
+      <table class="item-table" id="itemTable">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Attribute</th>
+            <th>Type</th>
+            <th>Difficulty (p)</th>
+            <th>Discrimination (r)</th>
+            <th>Facility Bar</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="itemTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Reliability & DIF -->
+  <div class="grid-2" style="margin-bottom:24px">
+    <div class="card">
+      <div class="card-title">Reliability Metrics</div>
+      <div class="card-sub">Internal consistency and measurement precision</div>
+      <div class="rel-grid" style="margin-bottom:20px">
+        <div class="rel-item">
+          <div class="rel-label">Overall α</div>
+          <div class="rel-value" style="color:var(--success)">0.91</div>
+          <div class="rel-note">Excellent (&gt;0.90)</div>
+        </div>
+        <div class="rel-item">
+          <div class="rel-label">Reading α</div>
+          <div class="rel-value" style="color:var(--success)">0.88</div>
+          <div class="rel-note">Good (0.80–0.90)</div>
+        </div>
+        <div class="rel-item">
+          <div class="rel-label">Listening α</div>
+          <div class="rel-value" style="color:var(--success)">0.86</div>
+          <div class="rel-note">Good (0.80–0.90)</div>
+        </div>
+        <div class="rel-item">
+          <div class="rel-label">Speaking α</div>
+          <div class="rel-value" style="color:var(--amber)">0.79</div>
+          <div class="rel-note">Acceptable (0.70–0.80)</div>
+        </div>
+        <div class="rel-item">
+          <div class="rel-label">Writing α</div>
+          <div class="rel-value" style="color:var(--success)">0.83</div>
+          <div class="rel-note">Good (0.80–0.90)</div>
+        </div>
+        <div class="rel-item">
+          <div class="rel-label">SEM (overall)</div>
+          <div class="rel-value" style="color:var(--teal)">2.4</div>
+          <div class="rel-note">95% CI ± 4.7</div>
+        </div>
+      </div>
+      <div class="chart-wrap-sm">
+        <canvas id="alphaChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Differential Item Functioning (DIF)</div>
+      <div class="card-sub">Mantel-Haenszel procedure · gender and language background</div>
+      <div class="dif-legend">
+        <div class="dif-leg-item"><div class="dif-swatch" style="background:var(--success)"></div>No DIF (A)</div>
+        <div class="dif-leg-item"><div class="dif-swatch" style="background:var(--amber)"></div>Moderate DIF (B)</div>
+        <div class="dif-leg-item"><div class="dif-swatch" style="background:var(--coral)"></div>Large DIF (C)</div>
+      </div>
+      <div class="chart-wrap-lg">
+        <canvas id="difChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Item Characteristic Curves -->
+  <div class="section-header">
+    <h2>IRT Model Fit</h2>
+    <p>1-PL Rasch model · Person-item map and fit statistics</p>
+  </div>
+  <div class="grid-2" style="margin-bottom:40px">
+    <div class="card">
+      <div class="card-title">Wright Map (Person–Item)</div>
+      <div class="card-sub">Item difficulty vs person ability on the logit scale</div>
+      <div class="chart-wrap-lg">
+        <canvas id="wrightChart"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Model Fit (Infit / Outfit)</div>
+      <div class="card-sub">Mean Square fit statistics · acceptable range 0.70–1.30</div>
+      <div class="chart-wrap-lg">
+        <canvas id="fitChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// ── Data ────────────────────────────────────────────────
+const SKILLS = ['Reading','Listening','Speaking','Writing'];
+const COLORS = {teal:'#6B61FA',coral:'#DF202E',amber:'#ED9E2F',success:'#2DCC70',mid:'#9EA2C4'};
+
+const ITEMS = {
+  reading:[
+    {id:'R01',attr:'Identifying Main Idea',type:'MCQ',p:0.72,r:0.51},
+    {id:'R02',attr:'Vocabulary in Context',type:'MCQ',p:0.65,r:0.48},
+    {id:'R03',attr:'Inferencing',type:'MCQ',p:0.54,r:0.56},
+    {id:'R04',attr:'Text Structure',type:'MCQ',p:0.48,r:0.44},
+    {id:'R05',attr:'Author Purpose',type:'MCQ',p:0.61,r:0.42},
+    {id:'R06',attr:'Detail Retrieval',type:'Short Answer',p:0.70,r:0.38},
+    {id:'R07',attr:'Cohesion & Reference',type:'MCQ',p:0.44,r:0.52},
+    {id:'R08',attr:'Critical Reading',type:'Short Answer',p:0.38,r:0.57},
+    {id:'R09',attr:'Skimming',type:'MCQ',p:0.77,r:0.33},
+    {id:'R10',attr:'Scanning',type:'MCQ',p:0.81,r:0.29},
+  ],
+  listening:[
+    {id:'L01',attr:'Gist Understanding',type:'MCQ',p:0.74,r:0.46},
+    {id:'L02',attr:'Specific Information',type:'MCQ',p:0.62,r:0.50},
+    {id:'L03',attr:'Speaker Attitude',type:'MCQ',p:0.50,r:0.54},
+    {id:'L04',attr:'Inferencing',type:'MCQ',p:0.43,r:0.58},
+    {id:'L05',attr:'Note Completion',type:'Short Answer',p:0.55,r:0.44},
+    {id:'L06',attr:'Discourse Markers',type:'MCQ',p:0.38,r:0.41},
+    {id:'L07',attr:'Phonological Discrimination',type:'MCQ',p:0.66,r:0.36},
+    {id:'L08',attr:'Following Instructions',type:'MCQ',p:0.71,r:0.43},
+    {id:'L09',attr:'Summarising Spoken Text',type:'Short Answer',p:0.41,r:0.59},
+    {id:'L10',attr:'Pronunciation Recognition',type:'MCQ',p:0.17,r:0.18},
+  ],
+  speaking:[
+    {id:'S01',attr:'Pronunciation',type:'Rating',p:0.60,r:0.61},
+    {id:'S02',attr:'Fluency & Pace',type:'Rating',p:0.57,r:0.63},
+    {id:'S03',attr:'Grammar Range',type:'Rating',p:0.52,r:0.58},
+    {id:'S04',attr:'Vocabulary Range',type:'Rating',p:0.55,r:0.60},
+    {id:'S05',attr:'Interactive Strategies',type:'Rating',p:0.48,r:0.55},
+    {id:'S06',attr:'Discourse Organisation',type:'Rating',p:0.45,r:0.52},
+    {id:'S07',attr:'Task Response',type:'Rating',p:0.63,r:0.49},
+    {id:'S08',attr:'Register',type:'Rating',p:0.59,r:0.47},
+    {id:'S09',attr:'Idiomatic Language',type:'Rating',p:0.15,r:0.19},
+  ],
+  writing:[
+    {id:'W01',attr:'Task Achievement',type:'Analytic',p:0.62,r:0.57},
+    {id:'W02',attr:'Coherence & Cohesion',type:'Analytic',p:0.55,r:0.60},
+    {id:'W03',attr:'Lexical Resource',type:'Analytic',p:0.50,r:0.58},
+    {id:'W04',attr:'Grammar Accuracy',type:'Analytic',p:0.47,r:0.55},
+    {id:'W05',attr:'Grammar Range',type:'Analytic',p:0.44,r:0.52},
+    {id:'W06',attr:'Sentence Variety',type:'Analytic',p:0.41,r:0.50},
+    {id:'W07',attr:'Punctuation',type:'Analytic',p:0.67,r:0.38},
+    {id:'W08',attr:'Spelling',type:'Analytic',p:0.72,r:0.35},
+    {id:'W09',attr:'Text Organisation',type:'Analytic',p:0.53,r:0.53},
+  ]
+};
+
+const STANINE_DIST = [4,7,12,17,20,17,12,7,4]; // % per stanine
+const SKILL_COLORS = [COLORS.teal, COLORS.amber, COLORS.coral, COLORS.success];
+
+// ── Helpers ──────────────────────────────────────────────
+function pStatus(p,r){
+  if(p<0.20||r<0.20) return '<span class="badge flag">Flag</span>';
+  if(p<0.30||r<0.30) return '<span class="badge warn">Review</span>';
+  return '<span class="badge good">OK</span>';
+}
+function facilityBar(p){
+  const w = Math.round(p*100);
+  const col = p>=0.7?COLORS.success:p>=0.4?COLORS.amber:COLORS.coral;
+  return `<div class="icc-bar" style="width:120px"><div class="icc-fill" style="width:${w}%;background:${col};height:6px;border-radius:3px"></div></div>`;
+}
+
+// ── Item Table ──────────────────────────────────────────
+let currentSkill = 'reading';
+function renderItemTable(skill){
+  const body = document.getElementById('itemTableBody');
+  body.innerHTML = ITEMS[skill].map(it=>`
+    <tr>
+      <td><strong style="font-family:monospace">${it.id}</strong></td>
+      <td>${it.attr}</td>
+      <td style="color:var(--mid-gray)">${it.type}</td>
+      <td>${it.p.toFixed(2)}</td>
+      <td>${it.r.toFixed(2)}</td>
+      <td>${facilityBar(it.p)}</td>
+      <td>${pStatus(it.p,it.r)}</td>
+    </tr>
+  `).join('');
+}
+function switchItemTab(el,skill){
+  document.querySelectorAll('#itemTabs .skill-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  currentSkill = skill;
+  renderItemTable(skill);
+}
+renderItemTable('reading');
+
+// ── Distribution Chart ───────────────────────────────────
+const distData = {
+  overall:[12,18,24,31,38,44,35,27,21,15,10,8,6,5,4],
+  reading:[8,14,20,28,35,42,38,30,24,18,12,8,5,4,3],
+  listening:[10,16,22,30,37,43,36,28,22,16,11,7,5,4,3],
+  speaking:[14,20,26,32,38,43,34,26,20,14,9,6,4,3,2],
+  writing:[12,18,24,30,36,42,35,27,21,15,10,7,5,4,3],
+};
+const distLabels = Array.from({length:15},(_,i)=>i+1);
+let distChart = new Chart(document.getElementById('distChart'),{
+  type:'bar',
+  data:{
+    labels:distLabels,
+    datasets:[{
+      label:'Students',
+      data:distData.overall,
+      backgroundColor:'rgba(107,97,250,0.7)',
+      borderColor:'rgba(107,97,250,0.9)',
+      borderWidth:1,borderRadius:4,
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{
+      x:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:COLORS.mid},title:{display:true,text:'Raw Score',color:COLORS.mid}},
+      y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:COLORS.mid},title:{display:true,text:'Number of Students',color:COLORS.mid}},
+    }
+  }
+});
+
+function switchDist(el,key){
+  document.querySelectorAll('#distTabs .dist-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  distChart.data.datasets[0].data = distData[key];
+  const skillIdx = ['overall','reading','listening','speaking','writing'].indexOf(key);
+  const col = skillIdx<=0?'rgba(107,97,250,0.7)':[COLORS.teal,COLORS.amber,COLORS.coral,COLORS.success][skillIdx-1]+'99';
+  distChart.data.datasets[0].backgroundColor = col;
+  distChart.data.datasets[0].borderColor = col.replace('99','cc');
+  distChart.update();
+}
+
+// ── Stanine Chart ────────────────────────────────────────
+new Chart(document.getElementById('stanineChart'),{
+  type:'bar',
+  data:{
+    labels:['S1','S2','S3','S4','S5','S6','S7','S8','S9'],
+    datasets:[{
+      label:'% of Cohort',
+      data:STANINE_DIST,
+      backgroundColor:['#DF202E','#DF202E','#ED9E2F','#ED9E2F','#6B61FA','#2DCC70','#2DCC70','#2DCC70','#2DCC70'],
+      borderRadius:6,borderSkipped:false,
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{
+      x:{grid:{display:false},ticks:{color:COLORS.mid}},
+      y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:COLORS.mid,callback:v=>v+'%'}},
+    }
+  }
+});
+
+// ── Correlation heatmap (bar chart approximation) ─────────
+new Chart(document.getElementById('correlChart'),{
+  type:'bar',
+  data:{
+    labels:['R–L','R–S','R–W','L–S','L–W','S–W'],
+    datasets:[{
+      label:'Pearson r',
+      data:[0.71,0.63,0.68,0.61,0.65,0.59],
+      backgroundColor:'rgba(107,97,250,0.6)',
+      borderColor:'rgba(107,97,250,0.9)',
+      borderWidth:1,borderRadius:6,
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{
+      x:{grid:{display:false},ticks:{color:COLORS.mid}},
+      y:{min:0,max:1,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:COLORS.mid}},
+    }
+  }
+});
+
+// ── Difficulty Distribution ──────────────────────────────
+new Chart(document.getElementById('difficultyChart'),{
+  type:'bar',
+  data:{
+    labels:['0.0–0.2','0.2–0.3','0.3–0.4','0.4–0.5','0.5–0.6','0.6–0.7','0.7–0.8','0.8–1.0'],
+    datasets:[{
+      label:'Items',
+      data:[2,1,4,8,10,8,4,1],
+      backgroundColor:['#DF202E','#DF202E','#ED9E2F','#6B61FA','#6B61FA','#2DCC70','#2DCC70','#2DCC70'],
+      borderRadius:6,borderSkipped:false,
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{
+      x:{grid:{display:false},ticks:{color:COLORS.mid,font:{size:11}}},
+      y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:COLORS.mid}},
+    }
+  }
+});
+
+// ── Scatter: Difficulty vs Discrimination ─────────────────
+const scatterData = Object.values(ITEMS).flat().map(it=>({x:it.p,y:it.r,label:it.id}));
+const flagged = scatterData.filter(d=>d.x<0.20||d.y<0.20);
+const reviewed = scatterData.filter(d=>(d.x<0.30||d.y<0.30)&&!(d.x<0.20||d.y<0.20));
+const ok = scatterData.filter(d=>d.x>=0.30&&d.y>=0.30);
+
+new Chart(document.getElementById('scatterChart'),{
+  type:'scatter',
+  data:{
+    datasets:[
+      {label:'OK',data:ok,backgroundColor:'rgba(45,204,112,0.7)',pointRadius:6},
+      {label:'Review',data:reviewed,backgroundColor:'rgba(237,158,47,0.8)',pointRadius:7},
+      {label:'Flag',data:flagged,backgroundColor:'rgba(223,32,46,0.9)',pointRadius:8,pointStyle:'triangle'},
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{
+      legend:{labels:{color:COLORS.mid,font:{size:12}}},
+      tooltip:{callbacks:{label:ctx=>`${ctx.raw.label} p=${ctx.raw.x.toFixed(2)} r=${ctx.raw.y.toFixed(2)}`}}
+    },
+    scales:{
+      x:{min:0,max:1,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:COLORS.mid},title:{display:true,text:'Difficulty (p)',color:COLORS.mid}},
+      y:{min:0,max:0.9,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:COLORS.mid},title:{display:true,text:'Discrimination (r)',color:COLORS.mid}},
+    }
+  }
+});
+
+// ── Alpha by skill chart ──────────────────────────────────
+new Chart(document.getElementById('alphaChart'),{
+  type:'bar',
+  data:{
+    labels:SKILLS,
+    datasets:[{
+      label:'Cronbach α',
+      data:[0.88,0.86,0.79,0.83],
+      backgroundColor:SKILL_COLORS.map(c=>c+'99'),
+      borderColor:SKILL_COLORS,
+      borderWidth:2,borderRadius:6,borderSkipped:false,
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{
+      x:{grid:{display:false},ticks:{color:COLORS.mid}},
+      y:{min:0.6,max:1.0,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:COLORS.mid}},
+    }
+  }
+});
+
+// ── DIF Chart ─────────────────────────────────────────────
+const difItems = Object.values(ITEMS).flat().map(it=>it.id);
+const difVals  = Object.values(ITEMS).flat().map(it=>{
+  const base = it.p;
+  return +(base + (Math.random()-0.5)*0.15).toFixed(2);
+});
+const difColors = Object.values(ITEMS).flat().map(it=>{
+  if(it.id==='L10'||it.id==='S09') return 'rgba(223,32,46,0.8)';
+  return 'rgba(45,204,112,0.6)';
+});
+new Chart(document.getElementById('difChart'),{
+  type:'bar',
+  data:{
+    labels:difItems,
+    datasets:[{
+      label:'DIF Effect',
+      data:Object.values(ITEMS).flat().map(it=>{
+        if(it.id==='L10') return 0.22;
+        if(it.id==='S09') return -0.19;
+        return +(Math.random()*0.1-0.05).toFixed(3);
+      }),
+      backgroundColor:difColors,
+      borderRadius:4,
+    }]
+  },
+  options:{
+    indexAxis:'y',
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{
+      x:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:COLORS.mid},title:{display:true,text:'MH log-odds ratio',color:COLORS.mid}},
+      y:{grid:{display:false},ticks:{color:COLORS.mid,font:{size:10}}},
+    }
+  }
+});
+
+// ── Wright Map ────────────────────────────────────────────
+const allItems = Object.values(ITEMS).flat();
+const itemDifficulties = allItems.map(it=>+(Math.log(it.p/(1-it.p))).toFixed(2));
+const personAbilities = Array.from({length:20},(_,i)=>+(i*0.4-3.5).toFixed(1));
+new Chart(document.getElementById('wrightChart'),{
+  type:'scatter',
+  data:{
+    datasets:[
+      {
+        label:'Items',
+        data:allItems.map((it,i)=>({x:itemDifficulties[i],y:0.3})),
+        backgroundColor:'rgba(107,97,250,0.8)',
+        pointRadius:8,pointStyle:'rect',
+      },
+      {
+        label:'Persons (mean)',
+        data:personAbilities.map(a=>({x:a,y:-0.3})),
+        backgroundColor:'rgba(45,204,112,0.5)',
+        pointRadius:6,
+      }
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{labels:{color:COLORS.mid}}},
+    scales:{
+      x:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:COLORS.mid},title:{display:true,text:'Logit Scale',color:COLORS.mid}},
+      y:{display:false,min:-1,max:1},
+    }
+  }
+});
+
+// ── IRT Fit Chart ─────────────────────────────────────────
+new Chart(document.getElementById('fitChart'),{
+  type:'bar',
+  data:{
+    labels:allItems.map(it=>it.id),
+    datasets:[
+      {
+        label:'Infit MNSQ',
+        data:allItems.map(it=>+(0.9+Math.random()*0.5).toFixed(2)),
+        backgroundColor:'rgba(107,97,250,0.7)',borderRadius:4,
+      },
+      {
+        label:'Outfit MNSQ',
+        data:allItems.map(it=>+(0.85+Math.random()*0.6).toFixed(2)),
+        backgroundColor:'rgba(237,158,47,0.7)',borderRadius:4,
+      }
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{labels:{color:COLORS.mid,font:{size:12}}}},
+    scales:{
+      x:{grid:{display:false},ticks:{color:COLORS.mid,font:{size:9},maxRotation:45}},
+      y:{
+        min:0,max:2,
+        grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:COLORS.mid},
+        title:{display:true,text:'Mean Square',color:COLORS.mid}
+      },
+    }
+  }
+});
+
+function updateDashboard(){ /* filter hook placeholder */ }
+</script>
+</body>
+</html>
