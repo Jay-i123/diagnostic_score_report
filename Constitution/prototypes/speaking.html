@@ -51,9 +51,17 @@
     border-radius: 20px;
     font-size: 12px;
     font-weight: 600;
-    margin-left: auto;
     white-space: nowrap;
   }
+  .fw-nav-link {
+    background: rgba(255,255,255,0.2);
+    padding: 8px 16px; border-radius: 6px;
+    font-size: 13px; font-weight: 600;
+    color: white; cursor: pointer; text-decoration: none;
+    white-space: nowrap; transition: background 0.15s;
+    margin-left: auto;
+  }
+  .fw-nav-link:hover { background: rgba(255,255,255,0.3); }
 
   .container { display: flex; min-height: calc(100vh - 80px); }
 
@@ -96,6 +104,34 @@
   }
   .task-header .description { font-size: 14px; color: var(--grey); line-height: 1.5; }
 
+  /* Q-MATRIX MINI DOTS */
+  .q-mini { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .q-mini-label { font-size: 11px; font-weight: 700; color: var(--grey); text-transform: uppercase; letter-spacing: 0.5px; }
+  .q-dots { display: flex; gap: 4px; }
+  .q-dot { padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; }
+  .q-dot.loaded { background: var(--teal); color: white; }
+  .q-dot.unloaded { background: var(--border); color: var(--grey); }
+
+  /* ACARA BADGES */
+  .acara-badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; }
+  .acara-badge.beginning { background: #E3F2FD; color: #1565C0; }
+  .acara-badge.emerging { background: #FFF3E0; color: #E65100; }
+  .acara-badge.developing { background: #F3E5F5; color: #7B1FA2; }
+  .acara-badge.consolidating { background: #E8F5E9; color: #2E7D32; }
+
+  /* ACARA PHASE CARDS */
+  .acara-card { padding: 16px; border-radius: 8px; }
+  .acara-card.beginning { background: #E3F2FD; }
+  .acara-card.emerging { background: #FFF3E0; }
+  .acara-card.developing { background: #F3E5F5; }
+  .acara-card.consolidating { background: #E8F5E9; }
+  .acara-card-phase { font-weight: 700; font-size: 15px; margin-bottom: 6px; }
+  .acara-card.beginning .acara-card-phase { color: #1565C0; }
+  .acara-card.emerging .acara-card-phase { color: #E65100; }
+  .acara-card.developing .acara-card-phase { color: #7B1FA2; }
+  .acara-card.consolidating .acara-card-phase { color: #2E7D32; }
+  .acara-card-desc { font-size: 13px; line-height: 1.6; }
+
   .item-card {
     background: white; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
     margin-bottom: 24px; overflow: hidden; border: 1px solid var(--border);
@@ -108,7 +144,16 @@
   }
   .card-body { padding: 20px; }
 
-  /* PROMPT BOX - what the student sees */
+  /* PICTURE STIMULUS */
+  .picture-stimulus {
+    background: #E8EAF6; border-radius: 8px; padding: 24px;
+    text-align: center; margin-bottom: 12px;
+  }
+  .picture-icon { font-size: 64px; display: block; margin-bottom: 8px; }
+  .picture-word { font-size: 22px; font-weight: 700; color: var(--dark); margin-top: 8px; }
+  .picture-desc { font-size: 12px; color: var(--grey); font-style: italic; }
+
+  /* PROMPT BOX */
   .prompt-box {
     background: var(--prompt-bg); border: 1px solid #BBDEFB;
     border-radius: 8px; padding: 16px 20px; margin-bottom: 16px;
@@ -128,7 +173,7 @@
     margin-top: 10px; font-size: 11px; color: var(--grey); font-style: italic;
   }
 
-  /* AUDIO BOX - what the student hears */
+  /* AUDIO BOX */
   .audio-box {
     background: #EDE7F6; border: 1px solid #D1C4E9;
     border-radius: 8px; padding: 16px 20px; margin-bottom: 16px;
@@ -140,7 +185,7 @@
   }
   .audio-box .audio-text { font-size: 14px; line-height: 1.7; }
 
-  /* MIC BOX - what the student says */
+  /* MIC BOX */
   .mic-box {
     background: var(--mic-bg); border: 1px solid #F8BBD0;
     border-radius: 8px; padding: 16px 20px; margin-bottom: 16px;
@@ -194,9 +239,7 @@
     margin: 8px 0; padding: 10px 14px; background: white;
     border-radius: 6px; border-left: 3px solid var(--da-accent);
   }
-  .da-box .da-tier .tier-num {
-    font-weight: 700; color: var(--da-accent); font-size: 12px;
-  }
+  .da-box .da-tier .tier-num { font-weight: 700; color: var(--da-accent); font-size: 12px; }
   .da-box .da-tier .tier-text { font-size: 13px; margin-top: 4px; }
 
   /* EXPLANATION */
@@ -219,15 +262,38 @@
   .exit-banner .exit-text { font-weight: 600; color: #E65100; }
   .exit-banner .exit-detail { color: var(--grey); font-size: 12px; }
 
-  /* SAMPLE WORDS/SENTENCES */
-  .sample-words {
-    display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0;
-  }
+  /* SAMPLE WORDS */
+  .sample-words { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
   .sample-word {
     background: white; border: 1px solid var(--border); padding: 6px 14px;
     border-radius: 6px; font-size: 15px; font-weight: 500;
   }
   .sample-word.target { border-color: var(--teal); background: var(--teal-light); font-weight: 700; }
+
+  /* CHAT BOX — for roleplay task */
+  .chat-box {
+    background: #F8F9FA; border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px 20px; margin-bottom: 16px;
+  }
+  .chat-label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.6px; color: var(--teal); margin-bottom: 14px;
+  }
+  .chat-turn { margin-bottom: 14px; }
+  .chat-speaker { font-size: 11px; font-weight: 700; color: var(--grey); margin-bottom: 4px; }
+  .chat-bubble {
+    display: inline-block; padding: 10px 14px; border-radius: 12px;
+    font-size: 14px; line-height: 1.5; max-width: 85%;
+  }
+  .chat-bubble.incoming { background: #E8EAF6; color: var(--dark); border-bottom-left-radius: 4px; }
+  .chat-bubble.outgoing { background: var(--teal-light); color: var(--dark); border-bottom-right-radius: 4px; }
+  .student-turn { text-align: right; }
+  .student-turn .chat-speaker { text-align: right; }
+  .chat-note {
+    font-size: 11px; color: var(--grey); font-style: italic;
+    margin-top: 4px; padding: 0 4px;
+  }
+  .student-turn .chat-note { text-align: right; }
 
   .nav-btn {
     display: inline-block; padding: 10px 20px;
@@ -248,9 +314,10 @@
 <div class="header">
   <div>
     <h1>Diagnostiq Speaking Assessment</h1>
-    <div class="subtitle">Task Browser &mdash; CDSA v2.0</div>
+    <div class="subtitle">Task Browser &mdash; CDSA v5.0</div>
   </div>
-  <div class="badge">Secondary &bull; Years 7&ndash;12</div>
+  <a class="fw-nav-link" onclick="showFramework()">&#129513; Framework Map</a>
+  <div class="badge">Years 3&ndash;10</div>
 </div>
 
 <div class="container">
@@ -259,85 +326,94 @@
 </div>
 
 <script>
+const ATTR_NAMES = [
+  'Segmental Accuracy',
+  'Prosodic Control',
+  'Spoken Lexicogrammar',
+  'Fluency',
+  'Pragmatic Competence'
+];
+
+const PROFILES = [
+  { label: 'Profile 1', pattern: [0,0,0,0,0], desc: 'No attributes mastered', phase: 'Beginning' },
+  { label: 'Profile 2', pattern: [1,0,0,0,0], desc: 'Segmental accuracy only', phase: 'Beginning\u2013Emerging' },
+  { label: 'Profile 3', pattern: [1,1,0,0,0], desc: 'Adds prosodic control', phase: 'Emerging' },
+  { label: 'Profile 4', pattern: [1,1,1,0,0], desc: 'Adds spoken lexicogrammar', phase: 'Emerging\u2013Developing' },
+  { label: 'Profile 5', pattern: [1,1,1,1,0], desc: 'Adds fluency', phase: 'Developing' },
+  { label: 'Profile 6', pattern: [1,1,1,1,1], desc: 'All attributes mastered', phase: 'Consolidating' },
+];
+
 const TASKS = [
   // ===== STAGE 1 =====
   {
     stage: 1,
-    taskCode: "1a",
-    taskName: "Minimal-Pair Sentence Read",
+    taskCode: "1",
+    taskName: "Picture Naming",
     attributes: "A1: Segmental Accuracy",
     qMatrix: "[1,0,0,0,0]",
-    description: "Student reads two sentences containing a target phonological contrast. ASR/rater determines: was a perceptible contrast produced? Tests whether the student can produce English phonemic distinctions.",
-    timing: "~2 min total (4\u20136 items)",
-    exitAfter: null,
+    description: "26 picture-and-word items covering complete phoneme coverage: 22 consonants, 11 vowels, 5 diphthongs, 8 consonant clusters, and multisyllabic structure. Student sees a picture and word label and says the word aloud. Three reportable sub-skills: Consonants, Vowels, Consonant clusters. Automatic L1 transfer pattern detection.",
+    timing: "~2 min (26 items)",
+    exitAfter: { label: "Exit A", profile: "Profile 1: [0,0,0,0,0]", phase: "Beginning", time: "~2 min", desc: "Cannot produce English sounds intelligibly. Focus: phonological awareness, minimal pair drills, targeted sound production." },
     samples: [
       {
-        label: "Sample Pair 1: /l/ vs /r/",
+        label: "Sample 1: Consonant \u2014 /\u03B8/ (voiceless th)",
         prompt: {
-          type: "read",
-          text: 'Read these two sentences aloud:\n\n1. "I was <strong>late</strong> for the meeting."\n2. "I was <strong>rate</strong> for the meeting."',
-          instruction: "Read each sentence clearly."
+          type: "picture",
+          image: { icon: "\uD83E\uDDB7", desc: "tooth" },
+          text: "tooth",
+          instruction: "Say the word for this picture."
         },
         scoring: {
-          method: "ASR + human validation",
-          binary: "Perceptible contrast between 'late' and 'rate'? Yes = 1, No = 0",
-          criteria: ["Perceptible /l/-/r/ contrast", "Both sentences intelligible"]
+          method: "Deepgram ASR word match + phoneme confidence",
+          binary: "Word recognised \u226575% confidence? Yes\u00A0=\u00A01, No\u00A0=\u00A00",
+          criteria: ["Target word 'tooth' recognised", "/\u03B8/ produced (not /t/ or /s/)", "Final /\u03B8/ not deleted"]
         },
-        explanation: "The /l/-/r/ distinction is the most common segmental confusion for East Asian L1 speakers. If both sentences are produced identically, the student has not mastered the contrast. This is a production test \u2014 the CDLA tests whether they can HEAR it."
+        explanation: "The /\u03B8/ phoneme is absent in most L1s. Students from Mandarin, Vietnamese, Arabic, and Southern European backgrounds typically substitute /t/, /s/, or /f/. Deepgram returns a confidence score per word plus an n-best list \u2014 if the second-best match is a substituted form (e.g. 'toot' or 'sooth'), the substitution type is flagged for L1 transfer analysis."
       },
       {
-        label: "Sample Pair 2: /\u03B8/ vs /s/",
+        label: "Sample 2: Vowel \u2014 /\u025B/ short e",
         prompt: {
-          type: "read",
-          text: 'Read these two sentences aloud:\n\n1. "I <strong>think</strong> it will work."\n2. "I <strong>sink</strong> it will work."',
-          instruction: "Read each sentence clearly."
+          type: "picture",
+          image: { icon: "\uD83D\uDECF\uFE0F", desc: "bed" },
+          text: "bed",
+          instruction: "Say the word for this picture."
         },
         scoring: {
-          method: "ASR + human validation",
-          binary: "Perceptible contrast between 'think' and 'sink'? Yes = 1, No = 0",
-          criteria: ["Perceptible /\u03B8/-/s/ contrast", "Both sentences intelligible"]
+          method: "Deepgram ASR word match + phoneme confidence",
+          binary: "Word recognised? Yes\u00A0=\u00A01, No\u00A0=\u00A00",
+          criteria: ["Target word 'bed' recognised", "/\u025B/ vowel produced correctly", "Not confused with 'bad' /\u00E6/ or 'bid' /\u026A/"]
         },
-        explanation: "The /\u03B8/-/s/ contrast is difficult for speakers of many L1s (Arabic, French, German, most Asian languages). The sentence context ensures the student produces the sound in a natural frame, not in isolation."
-      }
-    ]
-  },
-  {
-    stage: 1,
-    taskCode: "1b",
-    taskName: "Cluster Word Group",
-    attributes: "A1: Segmental Accuracy",
-    qMatrix: "[1,0,0,0,0]",
-    description: "Student reads 4\u20136 words targeting a specific consonant cluster type. Scored: \u226575% intelligible = 1. Tests consonant cluster production \u2014 many L1s insert epenthetic vowels or delete final clusters.",
-    timing: "~30 sec per group",
-    exitAfter: { label: "Exit A", profile: "Profile 1: [0,0,0,0,0]", phase: "Beginning", time: "~2 min", desc: "Cannot produce English phonemes intelligibly. Focus: phonological awareness, minimal pair drills." },
-    samples: [
-      {
-        label: "Sample Group 1: Initial /str-/ cluster",
-        prompt: {
-          type: "read",
-          text: 'Read these words aloud:',
-          words: ["strong", "street", "strange", "strike", "stream"]
-        },
-        scoring: {
-          method: "ASR + human validation",
-          binary: "\u226575% words intelligible with cluster intact? Yes = 1, No = 0",
-          criteria: ["No vowel insertion (e.g., 'su-trong')", "Cluster produced as unit", "\u22654 of 5 intelligible"]
-        },
-        explanation: "Initial /str-/ is a three-consonant onset absent in most L1s. Common errors: vowel insertion ('su-trong'), cluster reduction ('trong'), or substitution ('shtrong'). If the student inserts vowels systematically, this signals L1 syllable structure transfer."
+        explanation: "Short vowel contrasts (/\u00E6/-/\u025B/-/\u026A/) are a common substitution area for EAL/D learners whose L1 has fewer vowel phonemes. Picture naming removes the reading confound \u2014 the student knows the word from the image, so production errors are phonological, not lexical."
       },
       {
-        label: "Sample Group 2: Final /-nds/ cluster",
+        label: "Sample 3: Consonant cluster \u2014 /spr/",
         prompt: {
-          type: "read",
-          text: 'Read these words aloud:',
-          words: ["friends", "hands", "bands", "stands"]
+          type: "picture",
+          image: { icon: "\uD83C\uDF38", desc: "spring" },
+          text: "spring",
+          instruction: "Say the word for this picture."
         },
         scoring: {
-          method: "ASR + human validation",
-          binary: "\u226575% words intelligible with final cluster? Yes = 1, No = 0",
-          criteria: ["Final cluster audible", "No final consonant deletion", "\u22653 of 4 intelligible"]
+          method: "Deepgram ASR word match + phoneme confidence",
+          binary: "Word recognised with cluster intact? Yes\u00A0=\u00A01, No\u00A0=\u00A00",
+          criteria: ["Initial /spr-/ cluster produced as unit", "No vowel insertion (e.g. 'su-pring')", "No cluster reduction ('pring' or 'bring')"]
         },
-        explanation: "Final clusters are harder than initial clusters for most L2 speakers. Many L1s (Mandarin, Vietnamese, Cantonese) have no final consonant clusters at all. A student who deletes final /-ndz/ (saying 'fren' for 'friends') needs different teaching from one who inserts vowels."
+        explanation: "Three-consonant onsets are absent in most L1 phonotactic systems. L1 syllable structure transfer is the most common error: vowel insertion ('su-pring'), consonant deletion ('pring'), or partial cluster. Sub-skill report: Consonant clusters."
+      },
+      {
+        label: "Sample 4: Multisyllabic \u2014 stress pattern",
+        prompt: {
+          type: "picture",
+          image: { icon: "\uD83D\uDC0A", desc: "crocodile" },
+          text: "crocodile",
+          instruction: "Say the word for this picture."
+        },
+        scoring: {
+          method: "Deepgram ASR + talknicer syllable stress",
+          binary: "Word recognised with correct stress? Yes\u00A0=\u00A01, No\u00A0=\u00A00",
+          criteria: ["All 3 syllables produced", "Stress on first syllable (CROco-dile)", "No vowel substitution in unstressed syllables"]
+        },
+        explanation: "Multisyllabic items catch students who produce consonants and vowels correctly in isolation but apply L1 stress patterns to English words (e.g. 'cro-CO-dile'). Consistent mis-stressing here predicts A2 difficulty \u2014 it bridges segmental accuracy and prosodic control."
       }
     ]
   },
@@ -345,95 +421,113 @@ const TASKS = [
     stage: 1,
     taskCode: "2a",
     taskName: "Passage Read-Aloud",
-    attributes: "A2: Prosodic Control",
+    attributes: "A2: Prosodic Control \u2014 Stress",
     qMatrix: "[1,1,0,0,0]",
-    description: "Student reads a short passage (~60 words) with embedded stress targets. Scored on: stress placement (\u226575%), vowel reduction (\u226550%), rhythm (holistic). \u22652/3 adequate = 1.",
-    timing: "~1.5 min",
+    description: "Student reads 2\u20133 short passages containing stress-shift homographs with tagged stress targets. Two passage sets: Set A (Years 3\u20136) and Set B (Years 7\u201310). Uses the talknicer syllable stress engine. \u226575% stress targets correct \u2192 2a passed. A2 requires BOTH 2a and 2b.",
+    timing: "~3 min",
     exitAfter: null,
     samples: [
       {
-        label: "Sample Passage",
+        label: "Passage Set A \u2014 Years 3\u20136",
         prompt: {
           type: "read",
-          text: '"The <strong>government</strong> announced a new <strong>education</strong> policy <strong>yesterday</strong>. The <strong>minister</strong> explained that <strong>additional</strong> funding would be <strong>available</strong> for schools in <strong>regional</strong> areas. Teachers have <strong>responded</strong> positively, although some are <strong>concerned</strong> about the <strong>implementation</strong> timeline."',
+          text: 'The <strong>present</strong> the teacher gave was a <strong>record</strong> player. She said she wanted to <strong>record</strong> her favourite songs so she could <strong>present</strong> them to her class. The students thought it was a <strong>perfect</strong> idea.',
           instruction: "Read this passage aloud at a comfortable pace.",
-          meta: "~45 words \u2022 Stress targets in bold (student sees plain text)"
+          meta: "~35 words \u2022 Stress targets in bold (student sees plain text) \u2022 Homographs: present (n./v.), record (n./v.)"
         },
         scoring: {
-          method: "Automated stress detection + human rhythm rating",
-          binary: "\u22652 of 3 criteria met? Yes = 1, No = 0",
-          criteria: ["Stress placement \u226575% correct", "Vowel reduction \u226550%", "Rhythm: not word-by-word"]
+          method: "Talknicer syllable stress engine \u2014 syllable duration ratio comparison",
+          binary: "\u226575% stress targets correct? Yes\u00A0=\u00A01 (2a passed), No\u00A0=\u00A00",
+          criteria: ["PREsent (noun) vs preSENT (verb) distinction", "REcord (noun) vs reCORD (verb) distinction", "Rhythm not word-by-word (some vowel reduction present)"]
         },
-        explanation: "Multisyllabic academic words (government, education, implementation) have predictable stress patterns. A student who stresses every syllable equally ('go-VERN-ment' or 'GO-VERN-MENT' instead of 'GOV-ern-ment') lacks prosodic control. This is separate from segmental accuracy \u2014 they might produce every sound correctly but sound 'robotic.'"
+        explanation: "Stress-shift homographs are the cleanest test of lexical stress knowledge \u2014 same orthographic form, different stress pattern depending on grammatical role. A student who stresses both 'present' identically is applying a single stored form. Talknicer measures syllable duration ratios to detect stress placement without relying on pitch, which varies by L1."
+      },
+      {
+        label: "Passage Set B \u2014 Years 7\u201310",
+        prompt: {
+          type: "read",
+          text: 'The <strong>content</strong> of the report was excellent, but the group needed to <strong>content</strong> themselves with a lower mark because they went over time. The teacher said the <strong>contrast</strong> between their written work and their presentation was significant \u2014 they needed to <strong>contrast</strong> the two more clearly next time.',
+          instruction: "Read this passage aloud at a comfortable pace.",
+          meta: "~55 words \u2022 Stress targets in bold (student sees plain text) \u2022 Homographs: content (n./v.), contrast (n./v.)"
+        },
+        scoring: {
+          method: "Talknicer syllable stress engine",
+          binary: "\u226575% stress targets correct? Yes\u00A0=\u00A01 (2a passed), No\u00A0=\u00A00",
+          criteria: ["CONtent (noun) vs conTENT (verb) distinction", "CONtrast (noun) vs conTRAST (verb) distinction", "Academic vocabulary stress patterns (report, significant, presentation)"]
+        },
+        explanation: "Years 7\u201310 items use academic register vocabulary that students encounter in classroom discourse. A student who reads academic text word-by-word with equal stress on every syllable cannot participate effectively in academic oral tasks \u2014 this is what ACARA's Developing prosodic descriptor targets."
       }
     ]
   },
   {
     stage: 1,
     taskCode: "2b",
-    taskName: "Audio-Model Repetition",
-    attributes: "A2: Prosodic Control",
+    taskName: "Elicited Imitation",
+    attributes: "A2: Prosodic Control \u2014 Connected Speech",
     qMatrix: "[1,1,0,0,0]",
-    description: "Student hears a sentence with connected speech features, then reproduces it. Audio-first (no text). Tests linking, elision, assimilation, and weak forms.",
-    timing: "~1.5 min",
-    exitAfter: { label: "Exit B", profile: "Profile 2: [1,0,0,0,0]", phase: "Beginning\u2013Emerging", time: "~5 min", desc: "Sounds OK but English rhythm absent. Speech sounds word-by-word. Focus: stress drilling, weak forms, rhythm." },
+    description: "Student hears a sentence spoken by a native speaker in natural connected form, then repeats it. No text displayed \u2014 audio only. Tests linking, elision, assimilation, and weak forms. Scored via PocketSphinx forced alignment: connected model vs citation model fit. \u226550% items connected \u2192 2b passed. A2 mastered = BOTH 2a AND 2b passed.",
+    timing: "~2 min (6 items)",
+    exitAfter: { label: "Exit B", profile: "Profile 2: [1,0,0,0,0]", phase: "Beginning\u2013Emerging", time: "~7 min", desc: "Sounds OK but English rhythm not yet acquired. Can place some stress but lacks connected speech features (linking, elision, weak forms). Focus: connected speech drills, shadowing exercises, prosodic awareness." },
     samples: [
       {
-        label: "Sample Sentence 1",
-        audio: '"I\u2019m going to the shops to get some bread and milk."',
-        audioDirection: "Natural speed, 'going to' reduced to /g\u0259n\u0259/, 'bread and' linked, 'some' weakened",
+        label: "Item 1 (Years 3\u20136): Weak forms \u2014 'did you', 'to'",
+        audio: '\u201CDid you go to sport today?\u201D',
+        audioDirection: "Native speaker, natural speed. Connected form: /d\u026Ad\u0292\u0259 g\u0259\u028A t\u0259 sp\u0254\u02D0t t\u0259de\u026A/ \u2014 'you' \u2192 /j\u0259/, 'to' \u2192 /t\u0259/. No text shown to student.",
         prompt: {
           type: "listen-repeat",
-          instruction: "Listen, then say the sentence."
+          instruction: "Listen, then say the sentence exactly as you heard it."
         },
         scoring: {
-          method: "ASR model comparison + human validation",
-          binary: "Linking, reduction, and weak forms present? Yes = 1, No = 0",
-          criteria: ["'Going to' reduced (not full form)", "'Bread and' linked", "'Some' weakened to /s\u0259m/"]
+          method: "PocketSphinx forced alignment \u2014 connected model vs citation model fit",
+          binary: "Connected form produced (alignment favours connected model)? Yes\u00A0=\u00A01, No\u00A0=\u00A00",
+          criteria: ["'did you' reduced to /d\u026Ad\u0292\u0259/ (not separate words)", "'to' weakened to /t\u0259/ (not /tu\u02D0/)"]
         },
-        explanation: "If the student repeats every word in citation form ('I am going to the shops to get some bread and milk') with no reductions, they lack connected speech processing. This is the signature of L1 prosodic transfer."
+        explanation: "The citation form is 'Did \u00B7 you \u00B7 go \u00B7 to \u00B7 sport \u00B7 today?' \u2014 six separate words. The connected form runs 'didja-go-tuh-sport-tuhday'. A student who converts the audio back to citation form has bypassed connected speech input, processing words individually rather than as a phrase-level stream."
       },
       {
-        label: "Sample Sentence 2",
-        audio: '"Can you ask him if he wants to come with us?"',
-        audioDirection: "Natural speed, 'ask him' linked /\u0251\u02D0sk\u026Am/, 'wants to' reduced /w\u0252nst\u0259/, 'with us' linked",
+        label: "Item 2 (Years 3\u20136): Elision + linking \u2014 'want to', 'get a'",
+        audio: '\u201CI want to get a drink.\u201D',
+        audioDirection: "Native speaker, natural speed. Connected form: /a\u026A w\u0252n\u0259 ged\u0259 dr\u026A\u014Bk/ \u2014 'want to' \u2192 /w\u0252n\u0259/, 'get a' \u2192 /ged\u0259/. No text shown.",
         prompt: {
           type: "listen-repeat",
-          instruction: "Listen, then say the sentence."
+          instruction: "Listen, then say the sentence exactly as you heard it."
         },
         scoring: {
-          method: "ASR model comparison + human validation",
-          binary: "Connected speech features reproduced? Yes = 1, No = 0",
-          criteria: ["'Ask him' linked", "'Wants to' reduced", "Natural rhythm (not word-by-word)"]
+          method: "PocketSphinx forced alignment",
+          binary: "Connected form produced? Yes\u00A0=\u00A01, No\u00A0=\u00A00",
+          criteria: ["'want to' reduced to /w\u0252n\u0259/", "'get a' linked to /ged\u0259/", "Overall rhythm flowing (not word-by-word)"]
         },
-        explanation: "This sentence has three connected speech targets. A student who produces all words clearly but separately has segmental accuracy without prosodic control \u2014 exactly the A1 \u2713 / A2 \u2717 profile that triggers Exit B."
-      }
-    ]
-  },
-  {
-    stage: 1,
-    taskCode: "3",
-    taskName: "30-Second Picture Description",
-    attributes: "A3: Fluency (screening)",
-    qMatrix: "[1,1,1,0,0]",
-    description: "Student sees a concrete everyday scene and describes it for 30 seconds. No planning time. First spontaneous speech data point. Catches students who read aloud fine but freeze in unscripted speech.",
-    timing: "~1 min",
-    exitAfter: { label: "Exit C", profile: "Profile 3 (early): [1,1,0,0,0]", phase: "Emerging (early)", time: "~6 min", desc: "Controlled production OK but produced <10 words spontaneously. Focus: high-scaffolding oral output, sentence building." },
-    samples: [
+        explanation: "'Want to' \u2192 'wanna' and 'get a' \u2192 'gedda' are among the most frequent connected speech processes in Australian English. Students who reproduce the citation form cannot yet process rapid connected speech in real time \u2014 a direct listening obstacle in Australian classrooms."
+      },
       {
-        label: "Sample Scene",
+        label: "Item 3 (Years 7\u201310): Assimilation + reduction \u2014 'what are you'",
+        audio: '\u201CWhat are you doing after school?\u201D',
+        audioDirection: "Native speaker, natural speed. Connected form: /w\u0252t\u0283\u0259 du\u02D0\u026A\u014B \u0251\u02D0ft\u0259 sku\u02D0l/ \u2014 'what are you' \u2192 /w\u0252t\u0283\u0259/. No text shown.",
         prompt: {
-          type: "picture",
-          text: '<div style="background:#E8EAF6;padding:20px;border-radius:8px;text-align:center;margin-bottom:10px">\n<div style="font-size:48px">&#x1F3EB; &#x1F468;&#x200D;&#x1F3EB; &#x1F4DA; &#x1F9D1;&#x200D;&#x1F393; &#x1F9D1;&#x200D;&#x1F393; &#x1F9D1;&#x200D;&#x1F393;</div>\n<div style="font-size:13px;color:#555;margin-top:8px">Image: A classroom scene \u2014 teacher at whiteboard, students at desks, books and bags, clock on wall showing 9am</div>\n</div>',
-          instruction: "Describe what you see in this picture. You have 30 seconds.",
-          meta: "No planning time \u2022 30 seconds \u2022 Concrete everyday scene"
+          type: "listen-repeat",
+          instruction: "Listen, then say the sentence exactly as you heard it."
         },
         scoring: {
-          method: "Automated: word count + pause ratio",
-          binary: "\u226510 words produced? Yes = proceed to Stage 2. No = Exit C.",
-          criteria: ["Word count \u226510", "ANY connected speech (not single words)", "Basic word order present"]
+          method: "PocketSphinx forced alignment",
+          binary: "Connected form produced? Yes\u00A0=\u00A01, No\u00A0=\u00A00",
+          criteria: ["'what are you' collapsed to /w\u0252t\u0283\u0259/", "Assimilation present (/t/+/j/ \u2192 /t\u0283/)", "Natural pace maintained"]
         },
-        explanation: "This is the critical bridge task. A student who reads passages fluently (Task 2a) but produces fewer than 10 words here has an automaticity gap \u2014 phonological knowledge without real-time processing speed. Different teaching from lacking the sounds entirely. Exit C gives an actionable profile without subjecting them to 10+ minutes of tasks they cannot do."
+        explanation: "'What are you' \u2192 'whatcha' is a complex assimilation: /t/ + /j/ \u2192 /t\u0283/, plus reduction of 'are' to zero. Years 7\u201310 students who miss this will struggle to decode fast speech from peers and teachers \u2014 this item directly predicts listening comprehension outcomes."
+      },
+      {
+        label: "Item 4 (Years 7\u201310): Multiple reductions \u2014 'do you', 'want to'",
+        audio: '\u201CDo you want to come with us?\u201D',
+        audioDirection: "Native speaker, natural speed. Connected form: /d\u0292\u0259 w\u0252n\u0259 k\u028Cm w\u026A\u00F0\u203F\u028Cs/ \u2014 'do you' \u2192 /d\u0292\u0259/, 'want to' \u2192 /w\u0252n\u0259/. No text shown.",
+        prompt: {
+          type: "listen-repeat",
+          instruction: "Listen, then say the sentence exactly as you heard it."
+        },
+        scoring: {
+          method: "PocketSphinx forced alignment",
+          binary: "Connected form produced? Yes\u00A0=\u00A01, No\u00A0=\u00A00",
+          criteria: ["'do you' \u2192 /d\u0292\u0259/", "'want to' \u2192 /w\u0252n\u0259/", "'with us' linked /w\u026A\u00F0\u203F\u028Cs/"]
+        },
+        explanation: "This sentence contains three connected speech targets. A student who produces all three correctly demonstrates robust connected speech integration. Partial success can be analysed feature-by-feature from the alignment output to prioritise teaching targets."
       }
     ]
   },
@@ -441,215 +535,167 @@ const TASKS = [
   // ===== STAGE 2 =====
   {
     stage: 2,
-    taskCode: "4",
-    taskName: "Explain a Process",
-    attributes: "A3: Fluency",
+    taskCode: "3",
+    taskName: "Picture Description",
+    attributes: "A3: Spoken Lexicogrammar",
     qMatrix: "[1,1,1,0,0]",
-    description: "Student sees a process diagram and explains how it works. 60\u201390 seconds + 30s planning. Tests extended monologic discourse, logical sequencing, academic vocabulary, clause combining. Ecologically valid: this IS what EAL/D students do in Science and Geography.",
-    timing: "~3 min",
+    description: "Student sees a busy scene and describes it for 45 seconds. Tests whether phonological knowledge transfers to spontaneous speech with grammatical clause structure. Deepgram transcript \u2192 LLM lexicogrammar assessment. A3 mastered = output type is 'clausal' AND \u22652 subject-verb clauses detected.",
+    timing: "~1 min (45 sec recording)",
+    exitAfter: { label: "Exit C", profile: "Profile 3: [1,1,0,0,0]", phase: "Emerging", time: "~8 min", desc: "Phonological production acquired but spontaneous speech lacks clause structure. Produces isolated words or formulaic chunks. Focus: sentence-building from pictures, clause assembly, function word drills." },
+    samples: [
+      {
+        label: "Scene 1: School Playground",
+        prompt: {
+          type: "describe",
+          text: '<div style="background:#E8EAF6;padding:24px;border-radius:8px;text-align:center;margin-bottom:10px"><div style="font-size:52px;line-height:1.8">\u26BD \uD83E\uDDD1\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1 \uD83C\uDF33 \uD83C\uDFC3 \uD83C\uDF4E \uD83E\uDDD2 \uD83E\uDDD2 \uD83C\uDFEB \u2601\uFE0F \uD83C\uDF1E</div><div style="font-size:12px;color:#555;margin-top:10px">School playground at lunch \u2014 children playing soccer, sitting under a tree eating, running, talking in groups. School building in background.</div></div>',
+          instruction: "Tell me everything you can see in this picture. You have 45 seconds.",
+          meta: "No planning time \u2022 45 seconds \u2022 No text labels on image"
+        },
+        scoring: {
+          method: "Deepgram transcript \u2192 LLM lexicogrammar assessment (Claude)",
+          binary: "Output type 'clausal' AND \u22652 clauses? Yes\u00A0=\u00A01 (A3 mastered), No\u00A0=\u00A00",
+          criteria: ["Output type: clausal (not silence / isolated_words / formulaic / telegraphic)", "\u22652 subject-verb clauses detected", "Word order: English SVO patterns present", "Function words: articles/prepositions attempted"]
+        },
+        explanation: "Diagnostic sub-profiles by output type: SILENCE \u2014 fewer than 3 words. ISOLATED WORDS \u2014 'children, ball, tree, running' (no clauses). FORMULAIC \u2014 'I can see a\u2026 I can see a\u2026' (repeated frame, no productive assembly). TELEGRAPHIC \u2014 'boy kick ball, girl eat lunch' (content words, no function words). CLAUSAL \u2014 'Some children are playing soccer and there's a boy sitting under the tree.' Only clausal output passes A3."
+      },
+      {
+        label: "Scene 2: Kitchen at Dinner Time",
+        prompt: {
+          type: "describe",
+          text: '<div style="background:#FFF8E1;padding:24px;border-radius:8px;text-align:center;margin-bottom:10px"><div style="font-size:52px;line-height:1.8">\uD83C\uDF73 \uD83D\uDC69\u200D\uD83C\uDF73 \uD83E\uDD55 \uD83E\uDDC5 \uD83E\uDD58 \uD83E\uDDD1 \uD83D\uDCF1 \uD83D\uDC15 \uD83E\uDEB4 \uD83C\uDF06</div><div style="font-size:12px;color:#555;margin-top:10px">Kitchen at dinner time \u2014 adult cooking at stove, vegetables on bench, pot boiling, teenager on phone at table, dog near bowl, window with evening sky.</div></div>',
+          instruction: "Tell me everything you can see in this picture. You have 45 seconds.",
+          meta: "No planning time \u2022 45 seconds \u2022 No text labels on image"
+        },
+        scoring: {
+          method: "Deepgram transcript \u2192 LLM lexicogrammar assessment",
+          binary: "Output type 'clausal' AND \u22652 clauses? Yes\u00A0=\u00A01, No\u00A0=\u00A00",
+          criteria: ["Clausal output", "\u22652 subject-verb structures", "Tense marking attempted (is cooking, are sitting)", "Vocabulary range: \u22655 different content words"]
+        },
+        explanation: "The kitchen scene has simultaneous actions (cooking, sitting, waiting) which tests whether students can describe multiple subjects and predicates, not just list objects. 'There is a woman. She is cooking.' has two clauses and passes A3. 'Woman, cooking, vegetable, boy, phone' is telegraphic and does not."
+      }
+    ]
+  },
+  {
+    stage: 2,
+    taskCode: "4",
+    taskName: "Scenario Monologue",
+    attributes: "A4: Fluency",
+    qMatrix: "[1,1,1,1,0]",
+    description: "Student hears/reads a scenario, then responds for 60 seconds. Primary source of monologic fluency data. Deepgram word timestamps \u2192 speech rate (\u226590 syll/min), mean run length (\u22654 words), pause ratio (\u226440%). A4 scored across Tasks 4 + 5 combined. \u22652 of 3 metrics above threshold \u2192 A4 mastered.",
+    timing: "~2 min (60 sec recording)",
     exitAfter: null,
     samples: [
       {
-        label: "Sample: Water Cycle",
+        label: "Scenario A \u2014 Years 3\u20136: Sick yesterday",
         prompt: {
-          type: "diagram",
-          text: '<div style="background:#E8EAF6;padding:20px;border-radius:8px;text-align:center;margin-bottom:10px">\n<div style="font-size:36px">\u2600\uFE0F \u2192 \uD83C\uDF0A \u2192 \u2601\uFE0F \u2192 \uD83C\uDF27\uFE0F \u2192 \uD83C\uDF0A</div>\n<div style="font-size:13px;color:#555;margin-top:8px">Diagram: The Water Cycle \u2014 Evaporation \u2192 Condensation \u2192 Precipitation \u2192 Collection</div>\n</div>',
-          instruction: "Look at this diagram. You have 30 seconds to prepare. Then explain how this process works. You have 60\u201390 seconds.",
-          meta: "30s planning + 60\u201390s speaking"
+          type: "scenario",
+          text: '<div style="background:#E3F2FD;padding:16px;border-radius:8px;margin-bottom:10px"><div style="font-weight:700;margin-bottom:6px">\uD83D\uDCCB Scenario</div><div style="font-size:14px;line-height:1.7">You were sick yesterday and missed school. Your teacher sees you this morning and asks: <em>\u201COh, you weren\u2019t here yesterday \u2014 what happened?\u201D</em><br><br>Tell your teacher what happened. You have 60 seconds.</div></div>',
+          instruction: "Respond as you would in real life. You have 60 seconds.",
+          meta: "Audience: Teacher (authority register) \u2022 Format: Direct speech \u2022 5-second thinking pause before recording"
         },
         scoring: {
-          method: "Fluency: automated. Content: human + AI.",
-          binary: "Fluency metrics meet threshold? Yes = 1, No = 0",
-          criteria: ["Speech rate > threshold (syll/min)", "Mean run length > threshold", "Pause ratio < threshold", "Logical sequencing (cause \u2192 effect)", "Academic vocabulary attempted"]
+          method: "Deepgram timestamps \u2192 speech rate, mean run length, pause ratio",
+          binary: "\u22652 of 3 fluency metrics above threshold? Yes\u00A0=\u00A01 (contributes to A4 across Tasks 4+5)",
+          criteria: ["Speech rate \u226590 syllables/min", "Mean run length \u22654 words between pauses", "Pause ratio \u226440% of total time"]
         },
-        explanation: "This task mirrors real classroom demands. Fluency is measured on speech that EAL/D students actually produce in Australian classrooms. Three automated metrics (speech rate, mean run length, pause ratio) are extracted alongside human content judgement."
+        explanation: "This scenario provides content (the student knows what happened to them) so the task tests production speed, not knowledge retrieval. A student who produces 'I\u2026 was sick\u2026 I had\u2026 a headache\u2026 and my mum\u2026 said\u2026 stay home' has the vocabulary but dysfluent delivery \u2014 A4 not mastered. A student who says 'I was sick yesterday, I had a really bad headache and my mum said I should stay home and rest' is functionally fluent."
       },
       {
-        label: "Sample: Food Chain",
+        label: "Scenario B \u2014 Years 7\u201310: Forgot friend's laptop",
         prompt: {
-          type: "diagram",
-          text: '<div style="background:#E8EAF6;padding:20px;border-radius:8px;text-align:center;margin-bottom:10px">\n<div style="font-size:36px">\u2600\uFE0F \u2192 \uD83C\uDF3F \u2192 \uD83D\uDC1B \u2192 \uD83D\uDC26 \u2192 \uD83E\uDD85</div>\n<div style="font-size:13px;color:#555;margin-top:8px">Diagram: Food Chain \u2014 Sun \u2192 Plant \u2192 Insect \u2192 Small Bird \u2192 Eagle</div>\n</div>',
-          instruction: "Look at this diagram. You have 30 seconds to prepare. Then explain how this food chain works.",
-          meta: "30s planning + 60\u201390s speaking"
+          type: "scenario",
+          text: '<div style="background:#E3F2FD;padding:16px;border-radius:8px;margin-bottom:10px"><div style="font-weight:700;margin-bottom:6px">\uD83D\uDCCB Scenario</div><div style="font-size:14px;line-height:1.7">Your friend lent you their laptop last night. You forgot to bring it to school today and they need it for class. Leave them a voicemail message explaining what happened and what you will do about it.</div></div>',
+          instruction: "Leave a voicemail message. You have 60 seconds.",
+          meta: "Audience: Friend (peer register) \u2022 Format: Voicemail \u2022 5-second thinking pause before recording"
         },
         scoring: {
-          method: "Fluency: automated. Content: human + AI.",
-          binary: "Fluency metrics meet threshold? Yes = 1, No = 0",
-          criteria: ["Speech rate > threshold", "Logical sequence maintained", "Uses cause/effect language", "Academic vocabulary (energy, consume, predator)"]
+          method: "Deepgram timestamps \u2192 speech rate, mean run length, pause ratio",
+          binary: "\u22652 of 3 fluency metrics above threshold? Yes\u00A0=\u00A01 (contributes to A4 across Tasks 4+5)",
+          criteria: ["Speech rate \u226590 syllables/min", "Mean run length \u22654 words", "Pause ratio \u226440%", "Light register check: peer-appropriate tone (casual, not formal)"]
         },
-        explanation: "The food chain requires cause-effect sequencing ('the plant uses sunlight, then the insect eats the plant, which provides energy for...') and academic vocabulary. A student who lists items without connecting them ('plant, insect, bird') lacks the discourse competence ACARA targets at Developing."
+        explanation: "The voicemail format requires extended monologic production without interlocutor support. Unlike Task 5 (role play), there is no back-and-forth to scaffold fluency. Dysfluency here with fluency in Task 5 (monologue low, dialogue high) points to weak extended discourse rather than a general fluency deficit \u2014 a different teaching target."
       }
     ]
   },
   {
     stage: 2,
     taskCode: "5",
-    taskName: "Give Instructions",
-    attributes: "A3: Fluency",
-    qMatrix: "[1,1,1,0,0]",
-    description: "Student explains to a classmate how to complete a task. 45\u201360 seconds + 15s planning. Tests procedural language, imperatives vs modals, cohesion markers (first, then, after that, finally), addressee awareness.",
-    timing: "~2 min",
-    exitAfter: null,
-    samples: [
-      {
-        label: "Sample: Science Experiment",
-        prompt: {
-          type: "instruction",
-          text: '<div style="background:#E8EAF6;padding:20px;border-radius:8px;margin-bottom:10px">\n<div style="font-weight:700;margin-bottom:8px">\uD83E\uDDEA Science Lab: Dissolving Salt</div>\n<div style="font-size:14px">Equipment: beaker, water, salt, stirring rod, timer<br>Steps: Fill beaker \u2192 Add salt \u2192 Stir \u2192 Time how long to dissolve \u2192 Record results</div>\n</div>',
-          instruction: "Your classmate missed the lesson. Explain to them how to do this experiment. You have 15 seconds to prepare, then 45\u201360 seconds to speak.",
-          meta: "15s planning + 45\u201360s speaking"
-        },
-        scoring: {
-          method: "Fluency: automated. Content: human.",
-          binary: "Fluency threshold met + procedural language used? Yes = 1, No = 0",
-          criteria: ["Cohesion markers (first, then, next, finally)", "Imperatives or modals (pour, you need to, make sure)", "Addressee awareness (talking TO someone)", "Logical step sequence"]
-        },
-        explanation: "This directly tests peer instruction \u2014 a core classroom demand. A student who lists steps without cohesion markers or addressee awareness ('fill beaker, add salt, stir') may have the vocabulary but lack the discourse frame for procedural talk."
-      }
-    ]
-  },
-  {
-    stage: 2,
-    taskCode: "6",
-    taskName: "Summarise a Short Text",
-    attributes: "A3: Fluency",
-    qMatrix: "[1,1,1,0,0]",
-    description: "Student hears or reads an ~80-word paragraph, then summarises aloud. 45\u201360 seconds. Tests information selection, paraphrasing (not verbatim), compression, cross-modal transfer.",
-    timing: "~2 min",
-    exitAfter: { label: "End Stage 2", profile: "Profile 3 (full): [1,1,0,0,0]", phase: "Emerging", time: "~15 min", desc: "Attempted all classroom tasks but fluency below threshold. Can speak spontaneously but with excessive pausing. Focus: fluency building." },
-    samples: [
-      {
-        label: "Sample: Information Text",
-        prompt: {
-          type: "summarise",
-          text: '<div style="background:#FAFBFC;border:1px solid #E0E0E0;padding:16px;border-radius:8px;margin-bottom:10px;font-size:14px;line-height:1.7">"Australia\u2019s Great Barrier Reef is the world\u2019s largest coral reef system, stretching over 2,300 kilometres along the Queensland coast. It supports more than 1,500 species of fish and 400 types of coral. In recent years, rising ocean temperatures have caused widespread coral bleaching, which occurs when stressed corals expel the algae that give them colour and nutrients. Scientists warn that without urgent action to reduce carbon emissions, up to 90% of the world\u2019s coral reefs could be lost by 2050."</div>',
-          instruction: "You just read this paragraph. Now summarise the main points in your own words. You have 45\u201360 seconds.",
-          meta: "~78 words \u2022 45\u201360s speaking"
-        },
-        scoring: {
-          method: "Fluency: automated. Content: human + AI.",
-          binary: "Fluency threshold met + key information selected? Yes = 1, No = 0",
-          criteria: ["Paraphrasing (not verbatim recall)", "Key info selected (reef, bleaching, threat)", "Compression (shorter than original)", "Fluency metrics above threshold"]
-        },
-        explanation: "Summarising requires cross-modal transfer (reading \u2192 speaking) and information selection. A student who reads the passage aloud verbatim has not summarised. A student who selects key facts and rephrases them is demonstrating the Developing-phase skill ACARA describes."
-      }
-    ]
-  },
-
-  // ===== STAGE 3 =====
-  {
-    stage: 3,
-    taskCode: "7",
-    taskName: "Role Play",
-    attributes: "A4: Pragmatic Competence",
-    qMatrix: "[1,1,1,1,0]",
-    description: "2\u20133 scenarios. Student hears context + interlocutor prompt, produces a spoken response. Tests speech act appropriateness, politeness/hedging, register (peer vs teacher), turn-taking. Includes Dynamic Assessment (DA) mediation if Phase 1 fails.",
-    timing: "~5 min",
-    exitAfter: null,
-    samples: [
-      {
-        label: "Scenario 1: Ask a teacher for an extension",
-        prompt: {
-          type: "roleplay",
-          text: '<strong>Situation:</strong> Your Science assignment is due tomorrow, but you\u2019ve been sick this week and haven\u2019t finished it. You need to ask your teacher, Mr Williams, for an extension.',
-          instruction: "You will hear Mr Williams speak first. Then respond as you would in real life."
-        },
-        audio: '"Good morning. Have you got your assignment ready for tomorrow?"',
-        audioDirection: "Mr Williams \u2014 teacher, male voice, friendly but expects the work",
-        da: {
-          tier1: '"Can you think of another way to say that?" (Implicit \u2014 no specific guidance)',
-          tier2: '"Remember, you\u2019re talking to a teacher. How might you make it more polite?" (Explicit register cue)',
-          tier3: '"You could say: \u2018Would it be possible to get an extension? I\u2019ve been unwell this week.\u2019 Now try your own version." (Model provided)'
-        },
-        scoring: {
-          method: "Human-rated (double 20%)",
-          binary: "Phase 1: Appropriate speech act produced? Yes = 1, No = 0",
-          criteria: ["Polite request form (not demand)", "Reason/explanation given", "Appropriate register (teacher, not peer)", "Hedging present (would, could, possibly)"]
-        },
-        explanation: "ACARA\u2019s Beginning descriptor: 'use statements instead of polite requests, which may be perceived as rudeness but indicate a lack of cultural knowledge.' A student who says 'I need more time' (direct statement) vs 'Would it be possible to get an extension?' (hedged request) reveals their pragmatic competence level."
-      },
-      {
-        label: "Scenario 2: Negotiate with a classmate",
-        prompt: {
-          type: "roleplay",
-          text: '<strong>Situation:</strong> You\u2019re working on a group project with your classmate Sam. Sam wants to do a poster, but you think a PowerPoint would be better. You need to negotiate.',
-          instruction: "You will hear Sam speak first. Then respond."
-        },
-        audio: '"I reckon we should do a poster. It\u2019ll be way easier and we can just draw everything."',
-        audioDirection: "Sam \u2014 classmate, casual, enthusiastic about poster idea",
-        da: {
-          tier1: '"Is there another way you could put that?" (Implicit)',
-          tier2: '"Sam suggested one thing. You want something different. How can you disagree politely?" (Explicit)',
-          tier3: '"You could say: \u2018Yeah, a poster could work, but I was thinking maybe a PowerPoint? We could add videos and stuff.\u2019 Try something like that." (Model)'
-        },
-        scoring: {
-          method: "Human-rated (double 20%)",
-          binary: "Phase 1: Appropriate negotiation? Yes = 1, No = 0",
-          criteria: ["Acknowledges Sam\u2019s idea (not dismissive)", "Offers alternative with reason", "Peer register (casual but respectful)", "Negotiation language (maybe, what if, how about)"]
-        },
-        explanation: "Peer negotiation requires different pragmatic skills from teacher requests: casual register, solidarity markers, concession language. A student who says 'No, PowerPoint is better' (direct opposition) vs 'Yeah that could work, but maybe a PowerPoint?' (concessive negotiation) demonstrates different pragmatic competence."
-      }
-    ]
-  },
-  {
-    stage: 3,
-    taskCode: "8",
-    taskName: "Opinion with Challenge",
-    attributes: "A5: Interactional Competence",
+    taskName: "Role Play with AI",
+    attributes: "A5: Pragmatic Competence",
     qMatrix: "[1,1,1,1,1]",
-    description: "Student gives an opinion; AI interlocutor delivers a counter-argument; student responds. Tests defending under pressure, concession language, register shifting, spontaneous extended discourse. Apex attribute. Includes DA mediation.",
-    timing: "~5 min",
-    exitAfter: { label: "End of Test", profile: "Profiles 4\u20136", phase: "Developing\u2013Consolidating", time: "~24 min", desc: "Full diagnostic including Dynamic Assessment. DINA model fitted across all stages." },
+    description: "AI interlocutor plays a specific role. Student navigates a scenario requiring appropriate speech acts across 4\u20136 turns. LLM analyses: speech act produced, register appropriate, politeness present \u2192 overall_appropriate = true \u2192 A5 mastered. Also provides dialogic fluency data for A4 differential analysis.",
+    timing: "~4 min (4\u20136 turns)",
+    exitAfter: { label: "End of Test", profile: "Profiles 4\u20136", phase: "Developing\u2013Consolidating", time: "~14 min", desc: "Full diagnostic complete. ACARA phase determined by A4 and A5 mastery pattern. Profile 4 (A3 only), 5 (A3+A4), or 6 (all mastered)." },
     samples: [
       {
-        label: "Sample Topic: Phones in class",
+        label: "Scenario A \u2014 Years 3\u20136: Forgot homework",
         prompt: {
-          type: "opinion",
-          text: '<strong>Topic:</strong> Should students be allowed to use mobile phones during class?',
-          instruction: "Give your opinion. You have about 30 seconds."
+          type: "roleplay",
+          text: '<strong>Your role:</strong> Student who forgot to bring their homework.<br><br><strong>AI plays:</strong> Patient but firm teacher (Ms Chen) who expects homework to be handed in today.',
+          instruction: "The teacher will speak first. Respond naturally across 4\u20136 turns.",
+          aiRole: "You are Ms Chen, a patient but firm primary school teacher. Scenario: a student forgot their homework. Rules: stay in character for 4\u20136 turns, keep turns to 1\u20132 sentences, do not correct their English, create mild communicative pressure, respond naturally to appropriate or inappropriate speech acts, resolve warmly after 4\u20136 turns."
         },
-        challenge: {
-          text: '"But some people say phones are a distraction and students just use them for social media. What do you think about that?"',
-          direction: "AI interlocutor \u2014 neutral, measured tone, presenting counter-argument"
-        },
-        da: {
-          tier1: '"Can you say more about why you think that?" (Implicit prompt for elaboration)',
-          tier2: '"The other person said phones are a distraction. Do you agree or disagree? Why?" (Explicit framing)',
-          tier3: '"One way to respond: \u2018That\u2019s a fair point, but I still think phones can be useful because...\u2019 Try something like that." (Model)'
-        },
+        dialogue: [
+          { speaker: "AI (Ms Chen)", text: "Good morning! I\u2019m collecting the homework now \u2014 did you remember to bring yours in today?" },
+          { speaker: "Student \u2014 weak response (does not pass A5)", text: "I forget it. It at home.", note: "Telegraphic \u2014 speech act (apologise) absent, no politeness strategy, no explanation. A5 not mastered." },
+          { speaker: "AI (Ms Chen)", text: "Oh no, you forgot it. Can you tell me what happened?" },
+          { speaker: "Student \u2014 strong response (passes A5)", text: "I\u2019m sorry, Ms Chen. I was very busy last night with my sister and I didn\u2019t remember to put it in my bag. Can I bring it tomorrow?", note: "Appropriate \u2014 apologises, explains, makes polite request. A5 mastered even with minor grammatical errors." }
+        ],
         scoring: {
-          method: "AI-assisted + full human rating",
-          binary: "Phase 1: Coherent defence + acknowledgement of counter? Yes = 1, No = 0",
-          criteria: ["Opinion stated with reason", "Counter-argument acknowledged", "Defence maintained (not shutdown/repetition)", "Concession language attempted (I see your point, but...)"]
+          method: "LLM analysis of full transcript (Claude)",
+          binary: "overall_appropriate = true? Yes\u00A0=\u00A01 (A5 mastered), No\u00A0=\u00A00",
+          criteria: ["Speech act produced: apology + explanation + request", "Register appropriate: student-to-teacher formality", "Politeness present: 'sorry', 'can I', hedging", "overall_appropriate: true"]
         },
-        explanation: "This is the apex task. A student who repeats their original opinion verbatim, or says 'I don\u2019t know' and shuts down, lacks interactional competence. A student who says 'That\u2019s a fair point, but I still think...' demonstrates the concession-and-counter structure that ACARA places at Consolidating."
+        explanation: "A5 scoring is generous by design: 'Please can I have more time?' passes. 'Give me extension' does not. The LLM prompt instructs 'score generously \u2014 look for pragmatic intent, not grammatical accuracy.' This separates A5 (pragmatic competence) from A3 (lexicogrammar) \u2014 imperfect grammar can still demonstrate appropriate speech act production."
       },
       {
-        label: "Sample Topic: School uniforms",
+        label: "Scenario B \u2014 Years 7\u201310: Assignment extension request",
         prompt: {
-          type: "opinion",
-          text: '<strong>Topic:</strong> Should schools have mandatory uniforms?',
-          instruction: "Give your opinion. You have about 30 seconds."
+          type: "roleplay",
+          text: '<strong>Your role:</strong> Student who has been sick and needs an assignment extension.<br><br><strong>AI plays:</strong> Rule-following secondary teacher (Mr Davis) who is sympathetic but must follow school policy.',
+          instruction: "The teacher will speak first. Respond naturally across 4\u20136 turns.",
+          aiRole: "You are Mr Davis, a rule-following high school teacher. Scenario: a student wants an assignment extension after being sick. Rules: stay in character for 4\u20136 turns, 1\u20132 sentences per turn, don\u2019t correct English, acknowledge their request formally, ask for evidence or documentation naturally if they don\u2019t offer it, resolve warmly."
         },
-        challenge: {
-          text: '"But wouldn\u2019t uniforms make things fairer? Some students can\u2019t afford expensive clothes and feel left out."',
-          direction: "AI interlocutor \u2014 empathetic tone, social equity angle"
-        },
-        da: {
-          tier1: '"Can you tell me more about that?" (Implicit)',
-          tier2: '"They raised the point about fairness. What do you think about that argument specifically?" (Explicit)',
-          tier3: '"You might say: \u2018I understand the fairness argument, but I think there are other ways to handle that, like...\u2019 Try your own version." (Model)'
-        },
+        dialogue: [
+          { speaker: "AI (Mr Davis)", text: "Hi, you wanted to see me about the assignment that was due today?" },
+          { speaker: "Student \u2014 strong response (passes A5)", text: "Yes, Mr Davis. I was sick for three days this week \u2014 I have a medical certificate \u2014 and I wasn\u2019t able to finish the assignment. Would it be possible to get a short extension?", note: "Strong response \u2014 formal register, evidence offered proactively, hedged request ('would it be possible'). A5 clearly mastered." },
+          { speaker: "AI (Mr Davis)", text: "Thanks for letting me know, and for having the certificate ready. I can give you until Friday \u2014 would that give you enough time?" },
+          { speaker: "Student \u2014 strong response (passes A5)", text: "Yes, Friday is fine. Thank you very much, Mr Davis.", note: "Appropriate close \u2014 register maintained, gratitude expressed." }
+        ],
         scoring: {
-          method: "AI-assisted + full human rating",
-          binary: "Coherent defence + acknowledgement? Yes = 1, No = 0",
-          criteria: ["Engages with specific counter-argument", "Doesn\u2019t just repeat original point", "Some concession or nuance", "Extended discourse (not one-sentence answer)"]
+          method: "LLM analysis of full transcript",
+          binary: "overall_appropriate = true? Yes\u00A0=\u00A01 (A5 mastered), No\u00A0=\u00A00",
+          criteria: ["Formal register maintained throughout", "Request hedged appropriately ('would it be possible')", "Evidence offered (medical certificate)", "Gratitude expressed at resolution"]
         },
-        explanation: "The empathetic counter-argument ('fairness for students who can\u2019t afford') is harder to dismiss than a factual one. The student must engage with the emotional/social argument, not just factual points. This tests the 'versatility of expression' ACARA describes at Consolidating."
+        explanation: "Years 7\u201310 role plays require register maintenance across multiple turns. A student who opens with an appropriate formal request but reverts to casual register mid-conversation reveals inconsistent pragmatic control. The LLM assesses the full transcript, weighting register management across turns, not just the first utterance."
       }
     ]
   }
 ];
+
+// ===== UTILITIES =====
+function parseQMatrix(str) { return JSON.parse(str); }
+
+function getACARAPhase(qArr) {
+  let highest = -1;
+  qArr.forEach((v, i) => { if (v) highest = i; });
+  if (highest <= 0) return { phase: 'Beginning', cls: 'beginning' };
+  if (highest === 1) return { phase: 'Emerging', cls: 'emerging' };
+  if (highest === 2) return { phase: 'Emerging\u2013Developing', cls: 'developing' };
+  if (highest === 3) return { phase: 'Developing', cls: 'developing' };
+  return { phase: 'Consolidating', cls: 'consolidating' };
+}
+
+function renderMiniMatrix(qStr) {
+  const qArr = parseQMatrix(qStr);
+  const phase = getACARAPhase(qArr);
+  let html = '<div class="q-mini"><span class="q-mini-label">Q</span><div class="q-dots">';
+  qArr.forEach((v, i) => {
+    html += `<div class="q-dot ${v ? 'loaded' : 'unloaded'}" title="A${i+1}: ${ATTR_NAMES[i]}">A${i+1}</div>`;
+  });
+  html += `</div><span class="acara-badge ${phase.cls}">${phase.phase}</span></div>`;
+  return html;
+}
 
 // ===== RENDERING =====
 const sidebar = document.getElementById('sidebar');
@@ -658,10 +704,16 @@ let activeTaskIdx = 0;
 
 function renderSidebar() {
   let html = '';
+  html += `<div class="sidebar-section">
+    <div class="nav-item ${activeTaskIdx === -1 ? 'active' : ''}" onclick="showFramework()">
+      <span style="font-size:16px">&#129513;</span>
+      <span>Framework Map</span>
+    </div>
+  </div>`;
+
   const stages = [
-    { num: 1, label: 'STAGE 1: Foundational Production', time: '~6 min' },
-    { num: 2, label: 'STAGE 2: Classroom Speaking', time: '~7 min' },
-    { num: 3, label: 'STAGE 3: Interaction & Pragmatics', time: '~10 min' }
+    { num: 1, label: 'STAGE 1: Phonological Screening', time: '~7 min' },
+    { num: 2, label: 'STAGE 2: Spontaneous Production', time: '~7 min' }
   ];
   stages.forEach(stage => {
     const tasks = TASKS.filter(t => t.stage === stage.num);
@@ -688,19 +740,20 @@ function renderTask(idx) {
     <div class="task-header">
       <div class="task-type-badge">Stage ${task.stage} &bull; Task ${task.taskCode} &nbsp;&mdash;&nbsp; ${task.timing}</div>
       <h2>${task.taskName}</h2>
-      <div class="q-matrix">Q-matrix: ${task.qMatrix} &nbsp;&bull;&nbsp; ${task.attributes}</div>
+      ${renderMiniMatrix(task.qMatrix)}
+      <div class="q-matrix">${task.attributes}</div>
       <div class="description">${task.description}</div>
     </div>`;
 
-  task.samples.forEach((sample, sIdx) => {
+  task.samples.forEach((sample) => {
     html += `<div class="item-card">
       <div class="item-label">${sample.label}</div>
       <div class="card-body">`;
 
-    // Audio box (if present)
+    // Audio box (for listen-repeat tasks)
     if (sample.audio) {
       html += `<div class="audio-box">
-        <div class="audio-label">\uD83C\uDFA7 What the student hears</div>
+        <div class="audio-label">&#127911; What the student hears</div>
         <div class="audio-text">${sample.audio}</div>
         ${sample.audioDirection ? `<div style="font-size:11px;color:#888;margin-top:6px;font-style:italic">${sample.audioDirection}</div>` : ''}
       </div>`;
@@ -709,38 +762,65 @@ function renderTask(idx) {
     // Prompt box
     if (sample.prompt) {
       html += `<div class="prompt-box">
-        <div class="prompt-label"><span class="icon">\uD83D\uDCBB</span> What the student sees</div>`;
-      if (sample.prompt.text) html += `<div class="prompt-text">${sample.prompt.text}</div>`;
+        <div class="prompt-label"><span class="icon">&#128187;</span> What the student sees</div>`;
+
+      if (sample.prompt.type === 'picture' && sample.prompt.image) {
+        html += `<div class="picture-stimulus">
+          <span class="picture-icon">${sample.prompt.image.icon}</span>
+          <div class="picture-word">${sample.prompt.text}</div>
+          <div class="picture-desc">${sample.prompt.image.desc}</div>
+        </div>`;
+      } else if (sample.prompt.type === 'listen-repeat') {
+        html += `<div style="font-size:14px;color:var(--prompt-accent);font-style:italic;margin-bottom:10px">No text displayed \u2014 audio only. Student hears the sentence once, then speaks.</div>`;
+      } else if (sample.prompt.text) {
+        html += `<div class="prompt-text">${sample.prompt.text}</div>`;
+      }
+
       if (sample.prompt.words) {
         html += '<div class="sample-words">';
         sample.prompt.words.forEach(w => { html += `<span class="sample-word">${w}</span>`; });
         html += '</div>';
       }
-      if (sample.prompt.instruction) html += `<div class="prompt-instruction">\u25B6 ${sample.prompt.instruction}</div>`;
+      if (sample.prompt.instruction) html += `<div class="prompt-instruction">&#9654; ${sample.prompt.instruction}</div>`;
       if (sample.prompt.meta) html += `<div class="prompt-meta">${sample.prompt.meta}</div>`;
+
+      // AI system prompt excerpt (for roleplay)
+      if (sample.prompt.aiRole) {
+        html += `<div style="margin-top:12px;padding:10px 14px;background:white;border-radius:6px;border-left:3px solid var(--teal)">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--teal);margin-bottom:4px">AI System Prompt (excerpt)</div>
+          <div style="font-size:12px;color:var(--grey);line-height:1.6">${sample.prompt.aiRole}</div>
+        </div>`;
+      }
+
       html += '</div>';
     }
 
-    // Challenge box (for opinion tasks)
-    if (sample.challenge) {
-      html += `<div class="audio-box" style="background:#FFF3E0;border-color:#FFE0B2">
-        <div class="audio-label" style="color:#E65100">\uD83D\uDDE3\uFE0F AI Counter-Argument (after student responds)</div>
-        <div class="audio-text">${sample.challenge.text}</div>
-        <div style="font-size:11px;color:#888;margin-top:6px;font-style:italic">${sample.challenge.direction}</div>
-      </div>`;
+    // Chat dialogue (for roleplay tasks)
+    if (sample.dialogue) {
+      html += `<div class="chat-box">
+        <div class="chat-label">&#128172; Sample Dialogue Exchange</div>`;
+      sample.dialogue.forEach(turn => {
+        const isAI = turn.speaker.startsWith('AI');
+        html += `<div class="chat-turn ${isAI ? '' : 'student-turn'}">
+          <div class="chat-speaker">${turn.speaker}</div>
+          <div class="chat-bubble ${isAI ? 'incoming' : 'outgoing'}">${turn.text}</div>
+          ${turn.note ? `<div class="chat-note">${turn.note}</div>` : ''}
+        </div>`;
+      });
+      html += '</div>';
     }
 
     // Mic box
     html += `<div class="mic-box">
-      <div class="mic-label">\uD83C\uDF99\uFE0F Student speaks</div>
+      <div class="mic-label">&#127903;&#65039; Student speaks</div>
       <div class="mic-text">Student produces spoken response. Recording captured for scoring.</div>
-      <div class="timer"><span class="dot"></span> Recording...</div>
+      <div class="timer"><span class="dot"></span> Recording&hellip;</div>
     </div>`;
 
     // Scoring box
     if (sample.scoring) {
       html += `<div class="scoring-box">
-        <div class="scoring-label">\u2705 Scoring</div>
+        <div class="scoring-label">&#9989; Scoring</div>
         <div class="scoring-text">
           <strong>Method:</strong> ${sample.scoring.method}<br>
           <strong>Binary decision:</strong> ${sample.scoring.binary}
@@ -750,14 +830,13 @@ function renderTask(idx) {
       html += '</div></div>';
     }
 
-    // DA box (if present)
+    // DA box (retained — will not trigger in v5 tasks)
     if (sample.da) {
       html += `<div class="da-box">
-        <div class="da-label">\uD83E\uDDE0 Dynamic Assessment Mediation (if Phase 1 = 0)</div>
+        <div class="da-label">&#129504; Dynamic Assessment Mediation (if Phase 1 = 0)</div>
         <div class="da-tier"><span class="tier-num">Tier 1 \u2014 Implicit</span><div class="tier-text">${sample.da.tier1}</div></div>
         <div class="da-tier"><span class="tier-num">Tier 2 \u2014 Explicit</span><div class="tier-text">${sample.da.tier2}</div></div>
         <div class="da-tier"><span class="tier-num">Tier 3 \u2014 Model</span><div class="tier-text">${sample.da.tier3}</div></div>
-        <div style="font-size:12px;color:var(--da-accent);margin-top:10px">Responsiveness (0\u20133) \u2192 ZPD profile. Tier 1 success = large ZPD (nearly autonomous). Tier 3 success = small ZPD (needs intensive scaffolding).</div>
       </div>`;
     }
 
@@ -770,12 +849,12 @@ function renderTask(idx) {
     html += '</div></div>';
   });
 
-  // Exit banner (if present)
+  // Exit banner
   if (task.exitAfter) {
     html += `<div class="exit-banner">
-      <span class="exit-icon">\uD83D\uDEA8</span>
+      <span class="exit-icon">&#128680;</span>
       <div>
-        <div class="exit-text">${task.exitAfter.label} \u2014 ${task.exitAfter.profile}</div>
+        <div class="exit-text">${task.exitAfter.label} &mdash; ${task.exitAfter.profile}</div>
         <div class="exit-detail">ACARA: ${task.exitAfter.phase} &bull; Duration: ${task.exitAfter.time}<br>${task.exitAfter.desc}</div>
       </div>
     </div>`;
@@ -787,6 +866,99 @@ function renderTask(idx) {
   else html += '<div></div>';
   if (idx < TASKS.length - 1) html += `<button class="nav-btn" onclick="selectTask(${idx+1})">${TASKS[idx+1].taskName} &rarr;</button>`;
   html += '</div>';
+
+  main.innerHTML = html;
+  window.scrollTo(0, 0);
+}
+
+function showFramework() {
+  activeTaskIdx = -1;
+  renderSidebar();
+
+  let html = `<div class="task-header">
+    <div class="task-type-badge">Framework Reference</div>
+    <h2>CDSA v5 &mdash; Diagnostic Framework</h2>
+    <div class="description">Speaking attribute hierarchy, mastery profiles, task-attribute mapping, and ACARA phase alignment.</div>
+  </div>`;
+
+  // 1. Attribute hierarchy
+  html += `<div class="item-card"><div class="item-label">Attribute Prerequisite Hierarchy</div>
+  <div class="card-body">
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px">`;
+  ATTR_NAMES.forEach((name, i) => {
+    html += `<div style="background:var(--teal);color:white;padding:8px 14px;border-radius:6px;font-size:13px;font-weight:700">A${i+1}: ${name}</div>`;
+    if (i < ATTR_NAMES.length - 1) html += `<div style="font-size:20px;color:var(--teal)">&rarr;</div>`;
+  });
+  html += `</div>
+    <div style="font-size:13px;color:var(--grey)">Each attribute requires mastery of all lower attributes. Maps to ACARA EAL/D Learning Progression: Beginning &rarr; Emerging &rarr; Developing &rarr; Consolidating.</div>
+  </div></div>`;
+
+  // 2. Mastery profiles
+  html += `<div class="item-card"><div class="item-label">Valid Mastery Profiles</div>
+  <div class="card-body"><table style="width:100%;border-collapse:collapse;font-size:13px">
+  <thead><tr style="background:var(--light-grey)">
+    <th style="padding:8px 12px;text-align:left;border-bottom:2px solid var(--border)">Profile</th>`;
+  ATTR_NAMES.forEach((n, i) => {
+    html += `<th style="padding:8px;text-align:center;border-bottom:2px solid var(--border)">A${i+1}</th>`;
+  });
+  html += `<th style="padding:8px 12px;text-align:left;border-bottom:2px solid var(--border)">ACARA Phase</th>
+    <th style="padding:8px 12px;text-align:left;border-bottom:2px solid var(--border)">Description</th>
+  </tr></thead><tbody>`;
+  PROFILES.forEach(p => {
+    const cls = p.phase.toLowerCase().split('\u2013')[0].replace(/[^a-z]/g, '');
+    html += `<tr style="border-bottom:1px solid var(--border)">
+      <td style="padding:8px 12px;font-weight:700">${p.label}</td>`;
+    p.pattern.forEach(v => {
+      html += `<td style="padding:8px;text-align:center;font-size:16px">${v ? '<span style="color:var(--teal)">\u2713</span>' : '<span style="color:#ccc">\u2717</span>'}</td>`;
+    });
+    html += `<td style="padding:8px 12px"><span class="acara-badge ${cls}">${p.phase}</span></td>
+      <td style="padding:8px 12px;color:var(--grey)">${p.desc}</td>
+    </tr>`;
+  });
+  html += `</tbody></table></div></div>`;
+
+  // 3. Task type → attribute mapping
+  html += `<div class="item-card"><div class="item-label">Task Type &rarr; Attribute Mapping</div>
+  <div class="card-body"><table style="width:100%;border-collapse:collapse;font-size:13px">
+  <thead><tr style="background:var(--light-grey)">
+    <th style="padding:8px 12px;text-align:left;border-bottom:2px solid var(--border)">Task</th>
+    <th style="padding:8px 12px;text-align:left;border-bottom:2px solid var(--border)">Name</th>`;
+  ATTR_NAMES.forEach((n, i) => {
+    html += `<th style="padding:8px;text-align:center;border-bottom:2px solid var(--border)" title="${n}">A${i+1}</th>`;
+  });
+  html += `<th style="padding:8px 12px;text-align:center;border-bottom:2px solid var(--border)">Time</th></tr></thead><tbody>`;
+  TASKS.forEach((t, idx) => {
+    const qArr = parseQMatrix(t.qMatrix);
+    html += `<tr style="border-bottom:1px solid var(--border);cursor:pointer" onclick="selectTask(${idx})">
+      <td style="padding:8px 12px"><span style="background:var(--teal);color:white;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px">${t.taskCode}</span></td>
+      <td style="padding:8px 12px">${t.taskName}</td>`;
+    qArr.forEach(v => {
+      html += `<td style="padding:8px;text-align:center">${v ? '<span style="color:var(--teal);font-size:16px">&#9679;</span>' : '<span style="color:#ddd;font-size:16px">&#9675;</span>'}</td>`;
+    });
+    html += `<td style="padding:8px 12px;text-align:center;color:var(--grey)">${t.timing}</td></tr>`;
+  });
+  html += `</tbody></table></div></div>`;
+
+  // 4. ACARA phase cards
+  const phases = [
+    { phase: 'Beginning', cls: 'beginning', desc: 'Segmental accuracy. Can produce intelligible English phonemes but rhythm and connected speech not yet acquired.' },
+    { phase: 'Emerging', cls: 'emerging', desc: 'Prosodic control + spoken lexicogrammar. Can produce English stress and connected speech, and assemble spontaneous clausal speech.' },
+    { phase: 'Developing', cls: 'developing', desc: 'Fluency. Can produce speech at functional rate with adequate continuity across monologic and dialogic contexts.' },
+    { phase: 'Consolidating', cls: 'consolidating', desc: 'Pragmatic competence. Can produce appropriate speech acts with register awareness and politeness strategies.' }
+  ];
+  html += `<div class="item-card"><div class="item-label">ACARA Phase Descriptions</div>
+  <div class="card-body" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">`;
+  phases.forEach(p => {
+    html += `<div class="acara-card ${p.cls}">
+      <div class="acara-card-phase">${p.phase}</div>
+      <div class="acara-card-desc">${p.desc}</div>
+    </div>`;
+  });
+  html += `</div></div>`;
+
+  html += `<div style="margin-top:20px">
+    <button class="nav-btn" onclick="selectTask(0)">Task 1: Picture Naming &rarr;</button>
+  </div>`;
 
   main.innerHTML = html;
   window.scrollTo(0, 0);
