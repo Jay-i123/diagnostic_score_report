@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Constitution Checker</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f6fa;
+      color: #2d3436;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header / Config Bar ── */
+    .config-bar {
+      background: #fff;
+      border-bottom: 1px solid #dfe6e9;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .config-bar h1 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #2d3436;
+      margin-right: auto;
+    }
+    .config-bar label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #636e72;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .config-bar input[type="password"],
+    .config-bar input[type="url"] {
+      padding: 6px 12px;
+      border: 1px solid #dfe6e9;
+      border-radius: 6px;
+      font-size: 13px;
+      width: 280px;
+      background: #f5f6fa;
+    }
+    .config-bar input:focus {
+      outline: none;
+      border-color: #6c5ce7;
+      background: #fff;
+    }
+
+    /* ── Main Layout ── */
+    .main {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* ── Editor Panel ── */
+    .editor-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid #dfe6e9;
+    }
+    .panel-header {
+      padding: 12px 20px;
+      background: #fff;
+      border-bottom: 1px solid #dfe6e9;
+      font-weight: 600;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .editor-panel textarea {
+      flex: 1;
+      padding: 20px;
+      border: none;
+      resize: none;
+      font-size: 15px;
+      line-height: 1.7;
+      background: #fff;
+      font-family: 'Georgia', serif;
+    }
+    .editor-panel textarea:focus { outline: none; }
+    .editor-panel textarea::placeholder { color: #b2bec3; }
+
+    .submit-btn {
+      margin: 16px 20px;
+      padding: 12px 24px;
+      background: #6c5ce7;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .submit-btn:hover { background: #5a4bd1; }
+    .submit-btn:disabled {
+      background: #b2bec3;
+      cursor: not-allowed;
+    }
+
+    /* ── Chat Panel ── */
+    .chat-panel {
+      width: 400px;
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+    }
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .chat-msg {
+      max-width: 90%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.5;
+      word-wrap: break-word;
+    }
+    .chat-msg.user {
+      align-self: flex-end;
+      background: #6c5ce7;
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+    .chat-msg.assistant {
+      align-self: flex-start;
+      background: #f5f6fa;
+      color: #2d3436;
+      border-bottom-left-radius: 4px;
+    }
+    .chat-msg.system {
+      align-self: center;
+      background: transparent;
+      color: #b2bec3;
+      font-size: 12px;
+      font-style: italic;
+    }
+    .chat-input-row {
+      padding: 12px 16px;
+      border-top: 1px solid #dfe6e9;
+      display: flex;
+      gap: 8px;
+    }
+    .chat-input-row input {
+      flex: 1;
+      padding: 10px 14px;
+      border: 1px solid #dfe6e9;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+    .chat-input-row input:focus {
+      outline: none;
+      border-color: #6c5ce7;
+    }
+    .chat-input-row button {
+      padding: 10px 16px;
+      background: #6c5ce7;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .chat-input-row button:hover { background: #5a4bd1; }
+
+    /* ── Report Card Overlay ── */
+    .report-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 100;
+      overflow-y: auto;
+      padding: 40px 20px;
+    }
+    .report-overlay.active { display: block; }
+
+    .report-card {
+      max-width: 960px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+    .report-header {
+      padding: 28px 32px;
+      background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .report-header h2 { font-size: 22px; }
+    .overall-score {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 700;
+    }
+    .report-close {
+      position: absolute;
+      top: 16px;
+      right: 24px;
+      background: rgba(255,255,255,0.3);
+      border: none;
+      color: #fff;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .report-body { padding: 24px 32px; }
+    .criterion-card {
+      border: 1px solid #dfe6e9;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      transition: box-shadow 0.2s;
+    }
+    .criterion-card:hover {
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .criterion-card .crit-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .score-badge {
+      min-width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 16px;
+      color: #fff;
+    }
+    .score-badge.green { background: #00b894; }
+    .score-badge.amber { background: #fdcb6e; color: #2d3436; }
+    .score-badge.red { background: #d63031; }
+
+    .crit-title {
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    .crit-summary {
+      font-size: 13px;
+      color: #636e72;
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+    .flagged-list, .suggestions-list {
+      margin-top: 8px;
+      padding-left: 16px;
+    }
+    .flagged-list li {
+      font-size: 12px;
+      color: #d63031;
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+    .suggestions-list li {
+      font-size: 12px;
+      color: #00b894;
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #636e72;
+      margin-top: 10px;
+      margin-bottom: 4px;
+    }
+
+    /* Loading spinner */
+    .loading {
+      text-align: center;
+      padding: 60px;
+      color: #636e72;
+    }
+    .loading .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #dfe6e9;
+      border-top-color: #6c5ce7;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Word count */
+    .word-count {
+      font-size: 12px;
+      color: #b2bec3;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Config Bar -->
+  <div class="config-bar">
+    <h1>Constitution Checker</h1>
+    <div>
+      <label>Anthropic API Key</label><br>
+      <input type="password" id="apiKey" placeholder="sk-ant-..." />
+    </div>
+    <div>
+      <label>n8n Webhook URL</label><br>
+      <input type="url" id="webhookUrl" placeholder="https://your-n8n.example.com/webhook/..." />
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+
+    <!-- Editor -->
+    <div class="editor-panel">
+      <div class="panel-header">
+        <span>Passage Editor</span>
+        <span class="word-count" id="wordCount">0 words</span>
+      </div>
+      <textarea id="passage" placeholder="Write or paste your passage here..."></textarea>
+      <button class="submit-btn" id="submitBtn" onclick="submitForAssessment()">Submit for Assessment</button>
+    </div>
+
+    <!-- Chat -->
+    <div class="chat-panel">
+      <div class="panel-header">Constitution Coach</div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="chat-msg system">Ask me anything about inclusive and equitable writing.</div>
+      </div>
+      <div class="chat-input-row">
+        <input type="text" id="chatInput" placeholder="Ask a question..." onkeydown="if(event.key==='Enter')sendChat()" />
+        <button onclick="sendChat()">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Report Card Overlay -->
+  <div class="report-overlay" id="reportOverlay">
+    <div class="report-card" id="reportCard">
+      <!-- filled dynamically -->
+    </div>
+  </div>
+
+<script>
+// ── Constitution Criteria ──
+const CRITERIA = [
+  "Are individuals and groups represented authentically and fairly in all content, imagery, and examples, with care taken to rotate demographic representation?",
+  "Is there balanced visibility of a range of personal identities — not just as tokens, but as active participants with agency?",
+  "Are a range of experiences reflected in stories, examples, and visuals?",
+  "Are a variety of contexts presented that relate to a diverse spectrum of learners, avoiding centralizing contexts that are specific to a subset of learners?",
+  "Is representation balanced in number, roles, behaviors, and social relationships in images, text, and examples?",
+  "Are names, physical appearance, and intellectual traits depicted without stereotypical associations?",
+  "Does the material avoid consistently or exclusively associating negative traits, behaviors, or roles with any particular identity or characteristic?",
+  "Are stereotypes actively challenged and not perpetuated?",
+  "Are adjectives and descriptors used consistently and fairly across all individuals and groups, avoiding essentializing groups?",
+  "Are non-human characters depicted without reinforcing stereotypes or negative associations?",
+  "Are individuals and groups depicted in a wide range of roles, careers, and activities — not confined to stereotypical 'positive' traits?",
+  "Are positive examples authentic and not patronizing or exceptionalizing?",
+  "When presenting scientific consensus, is the opportunity taken to acknowledge that scientific theory has been used to justify bias?",
+  "Are underrepresented identities included in positions of influence, leadership, and expertise?",
+  "Are different individuals promoted in senior-level roles and positions of power and authority where possible and relevant?",
+  "Are contributions from a broad spectrum of identities included in historical, contemporary, and future narratives?",
+  "Are sources, references, and examples drawn from a variety of backgrounds, cultures, and perspectives?",
+  "Is there an effort to uncover and include authentic stories that have been excluded or minimized?",
+  "Are less common or popular examples included to avoid reinforcing ideas of 'exceptionalism'?",
+  "Is there consideration of cultural and historical context in the paradigms and theories presented?"
+];
+
+const CRITERIA_SHORT = [
+  "Authentic Representation",
+  "Balanced Visibility",
+  "Range of Experiences",
+  "Diverse Contexts",
+  "Balanced Roles",
+  "No Stereotypical Depictions",
+  "No Negative Associations",
+  "Challenging Stereotypes",
+  "Fair Descriptors",
+  "Non-Human Characters",
+  "Wide Range of Roles",
+  "Authentic Positivity",
+  "Science & Bias Acknowledgment",
+  "Inclusive Leadership",
+  "Diverse Authority Figures",
+  "Broad Contributions",
+  "Diverse Sources",
+  "Uncovered Stories",
+  "Avoiding Exceptionalism",
+  "Cultural & Historical Context"
+];
+
+// ── Chat history ──
+let chatHistory = [];
+
+const SYSTEM_PROMPT = `You are the Constitution Coach, an expert advisor on inclusive and equitable writing for educational publishing. You help authors write content that meets the following 20 social equality criteria (known as "the Constitution"):
+
+${CRITERIA.map((c, i) => `${i + 1}. ${c}`).join('\n')}
+
+Your role:
+- Answer questions about inclusive writing practices
+- Review sentences or passages the author shares with you
+- Suggest improvements to make content more equitable
+- Explain why certain language choices matter
+- Be constructive, supportive, and specific in your feedback
+
+Keep responses concise and practical. If the author shares a passage, reference specific parts in your feedback.`;
+
+// ── Word count ──
+document.getElementById('passage').addEventListener('input', function() {
+  const words = this.value.trim() ? this.value.trim().split(/\s+/).length : 0;
+  document.getElementById('wordCount').textContent = words + ' words';
+});
+
+// ── Chatbot ──
+async function sendChat() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  const apiKey = document.getElementById('apiKey').value.trim();
+  if (!apiKey) {
+    alert('Please enter your Anthropic API key.');
+    return;
+  }
+
+  input.value = '';
+  addChatMessage('user', msg);
+  chatHistory.push({ role: 'user', content: msg });
+
+  // Include current passage as context if available
+  const passage = document.getElementById('passage').value.trim();
+  const contextMessages = [...chatHistory];
+  if (passage && chatHistory.length === 1) {
+    contextMessages[0] = {
+      role: 'user',
+      content: `[Author's current passage for context:\n"${passage.substring(0, 2000)}"]\n\n${msg}`
+    };
+  }
+
+  const assistantDiv = addChatMessage('assistant', '');
+  assistantDiv.textContent = '...';
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1024,
+        system: SYSTEM_PROMPT,
+        messages: contextMessages
+      })
+    });
+
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.error?.message || 'API request failed');
+    }
+
+    const data = await response.json();
+    const reply = data.content[0].text;
+    assistantDiv.textContent = reply;
+    chatHistory.push({ role: 'assistant', content: reply });
+
+    // Scroll to bottom
+    const container = document.getElementById('chatMessages');
+    container.scrollTop = container.scrollHeight;
+  } catch (e) {
+    assistantDiv.textContent = 'Error: ' + e.message;
+    assistantDiv.style.color = '#d63031';
+  }
+}
+
+function addChatMessage(role, text) {
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + role;
+  div.textContent = text;
+  document.getElementById('chatMessages').appendChild(div);
+  const container = document.getElementById('chatMessages');
+  container.scrollTop = container.scrollHeight;
+  return div;
+}
+
+// ── Assessment via n8n ──
+async function submitForAssessment() {
+  const passage = document.getElementById('passage').value.trim();
+  if (!passage) {
+    alert('Please write or paste a passage to assess.');
+    return;
+  }
+
+  const webhookUrl = document.getElementById('webhookUrl').value.trim();
+  if (!webhookUrl) {
+    alert('Please enter your n8n webhook URL.');
+    return;
+  }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Assessing...';
+
+  // Show report overlay with loading state
+  const overlay = document.getElementById('reportOverlay');
+  const card = document.getElementById('reportCard');
+  card.innerHTML = `
+    <div class="report-header" style="position:relative;">
+      <h2>Constitution Assessment</h2>
+      <button class="report-close" onclick="closeReport()">&times;</button>
+    </div>
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Assessing your passage against 20 criteria...</p>
+      <p style="font-size:12px;margin-top:8px;color:#b2bec3;">This may take a minute as each criterion is evaluated by its own AI agent.</p>
+    </div>
+  `;
+  overlay.classList.add('active');
+
+  try {
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        passage: passage,
+        criteria: CRITERIA.map((c, i) => ({
+          id: i + 1,
+          criterion: c,
+          short_name: CRITERIA_SHORT[i]
+        }))
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Webhook returned ${response.status}`);
+    }
+
+    const data = await response.json();
+    renderReport(data.results || data, data.skipped || []);
+  } catch (e) {
+    card.innerHTML = `
+      <div class="report-header" style="position:relative;">
+        <h2>Assessment Error</h2>
+        <button class="report-close" onclick="closeReport()">&times;</button>
+      </div>
+      <div style="padding:32px;text-align:center;">
+        <p style="color:#d63031;font-size:15px;margin-bottom:12px;">Failed to reach the n8n webhook.</p>
+        <p style="color:#636e72;font-size:13px;">${e.message}</p>
+        <p style="color:#b2bec3;font-size:12px;margin-top:16px;">Make sure your n8n workflow is active and the webhook URL is correct.</p>
+      </div>
+    `;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Submit for Assessment';
+  }
+}
+
+function renderReport(results, skipped) {
+  const card = document.getElementById('reportCard');
+
+  // Calculate overall score from assessed criteria only
+  const scores = results.filter(r => r.score).map(r => r.score);
+  const avg = scores.length ? (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1) : 'N/A';
+
+  const scoreColor = avg >= 4 ? '#00b894' : avg >= 3 ? '#fdcb6e' : '#d63031';
+  const skippedCount = skipped ? skipped.length : 0;
+
+  let html = `
+    <div class="report-header" style="position:relative;">
+      <div>
+        <h2>Constitution Assessment Report</h2>
+        <p style="opacity:0.8;font-size:13px;margin-top:4px;">${results.length} criteria assessed${skippedCount ? `, ${skippedCount} skipped as not applicable` : ''}</p>
+      </div>
+      <div class="overall-score" style="background:${scoreColor}33;color:${scoreColor};">${avg}</div>
+      <button class="report-close" onclick="closeReport()">&times;</button>
+    </div>
+    <div class="report-body">
+  `;
+
+  // Assessed criteria
+  results.forEach((r, i) => {
+    const score = r.score || 0;
+    const colorClass = score >= 4 ? 'green' : score >= 3 ? 'amber' : 'red';
+    const name = r.criterion || r.short_name || CRITERIA_SHORT[i] || `Criterion ${i + 1}`;
+
+    html += `
+      <div class="criterion-card">
+        <div class="crit-top">
+          <div class="score-badge ${colorClass}">${score}</div>
+          <div class="crit-title">${name}</div>
+        </div>
+        <div class="crit-summary">${r.summary || 'No summary provided.'}</div>
+    `;
+
+    if (r.flagged_excerpts && r.flagged_excerpts.length > 0) {
+      html += `<div class="section-label">Flagged Excerpts</div><ul class="flagged-list">`;
+      r.flagged_excerpts.forEach(f => {
+        html += `<li>"${f}"</li>`;
+      });
+      html += `</ul>`;
+    }
+
+    if (r.suggestions && r.suggestions.length > 0) {
+      html += `<div class="section-label">Suggestions</div><ul class="suggestions-list">`;
+      r.suggestions.forEach(s => {
+        html += `<li>${s}</li>`;
+      });
+      html += `</ul>`;
+    }
+
+    html += `</div>`;
+  });
+
+  // Skipped criteria section
+  if (skipped && skipped.length > 0) {
+    html += `<div style="margin-top:24px;padding-top:20px;border-top:1px solid #dfe6e9;">
+      <div class="section-label" style="font-size:13px;margin-bottom:12px;">Skipped Criteria (Not Applicable)</div>`;
+    skipped.forEach(s => {
+      html += `
+        <div class="criterion-card" style="opacity:0.6;border-style:dashed;">
+          <div class="crit-top">
+            <div class="score-badge" style="background:#b2bec3;">—</div>
+            <div class="crit-title">${s.criterion || s.short_name || 'Unknown'}</div>
+          </div>
+          <div class="crit-summary">${s.summary || s.reason || 'Not applicable to this passage.'}</div>
+        </div>`;
+    });
+    html += `</div>`;
+  }
+
+  html += `</div>`;
+  card.innerHTML = html;
+}
+
+function closeReport() {
+  document.getElementById('reportOverlay').classList.remove('active');
+}
+
+// Close overlay on backdrop click
+document.getElementById('reportOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeReport();
+});
+</script>
+
+</body>
+</html>
